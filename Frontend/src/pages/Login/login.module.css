@@ -149,6 +149,10 @@
     text-align: center;
 }
 
+.btnCadastreSe:hover {
+    transform: translateY(-2px);
+}
+
 
 
 @media (max-width: 850px) {

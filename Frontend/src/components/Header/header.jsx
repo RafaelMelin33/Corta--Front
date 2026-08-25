@@ -452,6 +452,14 @@ export default function Header() {
                                 HISTÓRICO
                             </Link>
 
+                            <Link
+                                to="/barbearias-disponiveis"
+                                className={estilo.historico}
+                                onClick={fecharMenu}
+                            >
+                                BARBEARIAS
+                            </Link>
+
 
                             <button
                                 type="button"

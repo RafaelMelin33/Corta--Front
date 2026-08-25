@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LuSearch, LuMapPin, LuClock } from 'react-icons/lu';
 import { IMaskInput } from 'react-imask';
 import styles from './BarbeariasDisponiveis.module.css';
@@ -9,7 +9,7 @@ const barbeariasData = [
         endereco: 'Rua Aurora, Nº 308',
         horario: '8:00 - 20:00',
         dias: 'SEG - SAB',
-        imagem: '/barber1.jpg',
+        imagem: '/mvcortes.png'
     },
     {
         id: 2,
@@ -17,7 +17,7 @@ const barbeariasData = [
         endereco: 'Av. Euclides Miragaia, Nº 62B',
         horario: '9:00 - 19:30',
         dias: 'SEG - SEX',
-        imagem: '/barber2.jpg',
+        imagem: '/gordollas.png',
     },
     {
         id: 3,
@@ -25,7 +25,7 @@ const barbeariasData = [
         endereco: 'Av. Nove de Julho, Nº 628',
         horario: '8:00 - 20:00',
         dias: 'SEG - SAB',
-        imagem: '/barber3.jpg',
+        imagem: '/siralfred.png',
     },
     {
         id: 4,
@@ -33,7 +33,7 @@ const barbeariasData = [
         endereco: 'Rua Mantura Antônio, Nº 895',
         horario: '8:30 - 20:00',
         dias: 'SEG - SAB',
-        imagem: '/barber4.jpg',
+        imagem: '/elbrabo.png',
     },
 ];
 

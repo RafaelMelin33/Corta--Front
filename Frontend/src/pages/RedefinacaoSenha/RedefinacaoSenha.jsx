@@ -52,23 +52,19 @@ export default function RedefinicaoSenha() {
     // ALTERAR CÓDIGO
     // ==================================================
 
-    const handleChangeCode = (valor, index) => {
+    const handleChangeCode = (e, index) => {
+        const valor = e.target.value
+            .replace(/\D/g, '')
+            .slice(-1);
 
         const novoCodigo = [...codigo];
-
-        novoCodigo[index] = String(valor)
-            .replace(/\D/g, '')
-            .slice(0, 1);
+        novoCodigo[index] = valor;
 
         setCodigo(novoCodigo);
 
-        if (
-            novoCodigo[index] &&
-            index < 5
-        ) {
-
+        // Avança automaticamente para o próximo quadrado
+        if (valor && index < 5) {
             inputs.current[index + 1]?.focus();
-
         }
     };
 
@@ -79,14 +75,23 @@ export default function RedefinicaoSenha() {
 
     const handleKeyDown = (e, index) => {
 
-        if (
-            e.key === 'Backspace' &&
-            !codigo[index] &&
-            index > 0
-        ) {
+        if (e.key === 'Backspace') {
 
-            inputs.current[index - 1]?.focus();
+            // Se o quadrado atual estiver preenchido,
+            // apaga ele primeiro
+            if (codigo[index]) {
+                const novoCodigo = [...codigo];
+                novoCodigo[index] = '';
+                setCodigo(novoCodigo);
 
+                e.preventDefault();
+                return;
+            }
+
+            // Se estiver vazio, volta para o anterior
+            if (index > 0) {
+                inputs.current[index - 1]?.focus();
+            }
         }
     };
 
@@ -697,60 +702,37 @@ export default function RedefinicaoSenha() {
                                 className={styles.formulario}
                             >
 
-                                <div
-                                    className={
-                                        styles.otpContainer
-                                    }
-                                >
+                                <div className={styles.otpContainer}>
 
-                                    {codigo.map(
-                                        (digito, index) => (
+                                    {codigo.map((digito, index) => (
+                                        <input
+                                            key={index}
 
-                                            <IMaskInput
-                                                key={index}
+                                            ref={(elemento) => {
+                                                inputs.current[index] = elemento;
+                                            }}
 
-                                                ref={(elemento) => {
+                                            type="text"
+                                            inputMode="numeric"
+                                            maxLength={1}
 
-                                                    inputs.current[index] =
-                                                        elemento;
+                                            value={digito}
 
-                                                }}
+                                            onChange={(e) =>
+                                                handleChangeCode(e, index)
+                                            }
 
-                                                mask="0"
+                                            onKeyDown={(e) =>
+                                                handleKeyDown(e, index)
+                                            }
 
-                                                inputMode="numeric"
+                                            onPaste={handlePaste}
 
-                                                value={digito}
+                                            className={styles.entradaCodigo}
 
-                                                onAccept={(value) =>
-                                                    handleChangeCode(
-                                                        value,
-                                                        index
-                                                    )
-                                                }
-
-                                                onKeyDown={(e) =>
-                                                    handleKeyDown(
-                                                        e,
-                                                        index
-                                                    )
-                                                }
-
-                                                onPaste={
-                                                    handlePaste
-                                                }
-
-                                                className={
-                                                    styles.entradaCodigo
-                                                }
-
-                                                aria-label={
-                                                    `Dígito ${index + 1}`
-                                                }
-                                            />
-
-                                        )
-                                    )}
+                                            aria-label={`Dígito ${index + 1}`}
+                                        />
+                                    ))}
 
                                 </div>
 

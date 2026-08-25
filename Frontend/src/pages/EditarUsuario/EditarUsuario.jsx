@@ -26,9 +26,9 @@ export default function EditarUsuario() {
 
     const navigate = useNavigate();
 
-    // ==============================
+    // ==================================================
     // USUÁRIO
-    // ==============================
+    // ==================================================
 
     const [idUsuario, setIdUsuario] = useState(null);
 
@@ -36,39 +36,42 @@ export default function EditarUsuario() {
     const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
 
-    // ==============================
+    // ==================================================
     // SENHA
-    // ==============================
+    // ==================================================
 
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
 
-    // ==============================
+    // ==================================================
     // FOTO
-    // ==============================
+    // ==================================================
 
     const [arquivoImagem, setArquivoImagem] = useState(null);
     const [imagem, setImagem] = useState(null);
 
-    // ==============================
+    // ==================================================
     // CONTROLE
-    // ==============================
+    // ==================================================
 
     const [carregando, setCarregando] = useState(false);
     const [verificandoLogin, setVerificandoLogin] = useState(true);
 
-    // ==============================
+    // ==================================================
     // MENSAGEM
-    // ==============================
+    // ==================================================
 
     const [mensagem, setMensagem] = useState(null);
 
 
-    // ==============================
+    // ==================================================
     // URL DA FOTO
-    // ==============================
+    // ==================================================
 
-    const obterUrlFoto = (foto, atualizarCache = false) => {
+    const obterUrlFoto = (
+        foto,
+        atualizarCache = false
+    ) => {
 
         if (!foto) {
             return null;
@@ -84,60 +87,69 @@ export default function EditarUsuario() {
             foto.startsWith('http://') ||
             foto.startsWith('https://')
         ) {
+
             url = foto;
-        }
 
-        else if (foto.startsWith('/')) {
+        } else if (
+            foto.startsWith('/')
+        ) {
+
             url = `${API_URL}${foto}`;
-        }
 
-        else {
-            url = `${API_URL}/uploads/perfil/${foto}`;
+        } else {
+
+            url =
+                `${API_URL}/uploads/perfil/${foto}`;
         }
 
         if (atualizarCache) {
-            url += `${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
+
+            url +=
+                `${url.includes('?') ? '&' : '?'}t=${Date.now()}`;
         }
 
         return url;
     };
 
 
-    // ==============================
+    // ==================================================
     // CARREGAR USUÁRIO
-    // ==============================
+    // ==================================================
 
     useEffect(() => {
 
         let ativo = true;
 
+
         const carregarUsuario = async () => {
-
-            const usuarioSalvo =
-                localStorage.getItem('usuario');
-
-            if (!usuarioSalvo) {
-
-                navigate('/login', {
-                    replace: true
-                });
-
-                return;
-            }
 
             try {
 
-                const usuario =
-                    JSON.parse(usuarioSalvo);
+                // ==================================================
+                // PEGAR USUÁRIO DO LOCALSTORAGE
+                // ==================================================
 
-                const id =
-                    usuario.id_usuario ??
-                    usuario.id ??
-                    null;
+                const usuarioSalvo =
+                    localStorage.getItem('usuario');
 
-                if (!id) {
 
-                    localStorage.removeItem('usuario');
+                if (!usuarioSalvo) {
+
+                    console.warn(
+                        'Nenhum usuário encontrado no localStorage.'
+                    );
+
+                    /*
+                     * IMPORTANTE:
+                     *
+                     * Não removemos nada aqui.
+                     *
+                     * O cookie é a autenticação real.
+                     *
+                     * Se não houver localStorage, tentamos
+                     * verificar o perfil somente se houver
+                     * uma forma de obter o ID.
+                     */
 
                     navigate('/login', {
                         replace: true
@@ -146,21 +158,106 @@ export default function EditarUsuario() {
                     return;
                 }
 
+
+                // ==================================================
+                // CONVERTER JSON
+                // ==================================================
+
+                let usuario;
+
+                try {
+
+                    usuario =
+                        JSON.parse(usuarioSalvo);
+
+                } catch (erro) {
+
+                    console.error(
+                        'ERRO AO LER USUÁRIO:',
+                        erro
+                    );
+
+                    /*
+                     * Não usamos localStorage.clear().
+                     *
+                     * Apenas removemos o registro inválido.
+                     */
+
+                    localStorage.removeItem(
+                        'usuario'
+                    );
+
+                    navigate('/login', {
+                        replace: true
+                    });
+
+                    return;
+                }
+
+
+                // ==================================================
+                // PEGAR ID
+                // ==================================================
+
+                const id =
+                    usuario.id_usuario ??
+                    usuario.id ??
+                    null;
+
+
+                if (!id) {
+
+                    console.error(
+                        'Usuário sem ID:',
+                        usuario
+                    );
+
+                    localStorage.removeItem(
+                        'usuario'
+                    );
+
+                    navigate('/login', {
+                        replace: true
+                    });
+
+                    return;
+                }
+
+
                 if (!ativo) {
                     return;
                 }
 
+
                 setIdUsuario(id);
 
-                setNome(usuario.nome || '');
-                setEmail(usuario.email || '');
 
-                setTelefone(
-                    String(usuario.telefone || '')
-                        .replace(/\D/g, '')
+                // ==================================================
+                // PREENCHER DADOS TEMPORÁRIOS
+                // ==================================================
+
+                setNome(
+                    usuario.nome || ''
                 );
 
-                if (usuario.foto_perfil) {
+                setEmail(
+                    usuario.email || ''
+                );
+
+                setTelefone(
+                    String(
+                        usuario.telefone || ''
+                    ).replace(/\D/g, '')
+                );
+
+
+                // ==================================================
+                // FOTO
+                // ==================================================
+
+                if (
+                    usuario.foto_perfil
+                ) {
 
                     setImagem(
                         obterUrlFoto(
@@ -175,225 +272,370 @@ export default function EditarUsuario() {
                 }
 
 
-                // ==============================
+                // ==================================================
                 // BUSCAR DADOS ATUALIZADOS
-                // ==============================
+                // ==================================================
 
-                try {
+                console.log(
+                    'BUSCANDO PERFIL:',
+                    `/dados-perfil/${id}`
+                );
 
-                    const dados =
-                        await apiFetch(
-                            `/dados-perfil/${id}`,
-                            {
-                                method: 'GET'
-                            }
-                        );
 
-                    if (
-                        dados &&
-                        dados.usuario &&
-                        ativo
-                    ) {
-
-                        const usuarioAtualizado =
-                            dados.usuario;
-
-                        setNome(
-                            usuarioAtualizado.nome || ''
-                        );
-
-                        setEmail(
-                            usuarioAtualizado.email || ''
-                        );
-
-                        setTelefone(
-                            String(
-                                usuarioAtualizado.telefone || ''
-                            ).replace(/\D/g, '')
-                        );
-
-                        if (
-                            usuarioAtualizado.foto_perfil
-                        ) {
-
-                            setImagem(
-                                obterUrlFoto(
-                                    usuarioAtualizado.foto_perfil,
-                                    true
-                                )
-                            );
-
-                        } else {
-
-                            setImagem(null);
+                const dados =
+                    await apiFetch(
+                        `/dados-perfil/${id}`,
+                        {
+                            method: 'GET'
                         }
-
-
-                        // ==============================
-                        // ATUALIZAR LOCALSTORAGE
-                        // ==============================
-
-                        const usuarioFinal = {
-                            ...usuario,
-                            ...usuarioAtualizado,
-
-                            id:
-                                usuarioAtualizado.id_usuario ??
-                                id,
-
-                            id_usuario:
-                                usuarioAtualizado.id_usuario ??
-                                id
-                        };
-
-                        localStorage.setItem(
-                            'usuario',
-                            JSON.stringify(usuarioFinal)
-                        );
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        'ERRO AO BUSCAR PERFIL:',
-                        error
                     );
 
-                    if (error.status === 401) {
 
-                        localStorage.removeItem('usuario');
-
-                        navigate('/login', {
-                            replace: true
-                        });
-
-                        return;
-                    }
-
-                    if (error.status !== 404) {
-
-                        setMensagem({
-                            informacao:
-                                'Não foi possível carregar os dados do perfil.',
-                            tipo: 'erro'
-                        });
-                    }
+                if (
+                    !ativo ||
+                    !dados?.usuario
+                ) {
+                    return;
                 }
+
+
+                // ==================================================
+                // USUÁRIO ATUALIZADO
+                // ==================================================
+
+                const usuarioAtualizado =
+                    dados.usuario;
+
+
+                console.log(
+                    'PERFIL RECEBIDO:',
+                    usuarioAtualizado
+                );
+
+
+                // ==================================================
+                // ATUALIZAR ESTADOS
+                // ==================================================
+
+                setIdUsuario(
+                    usuarioAtualizado.id_usuario ??
+                    id
+                );
+
+                setNome(
+                    usuarioAtualizado.nome || ''
+                );
+
+                setEmail(
+                    usuarioAtualizado.email || ''
+                );
+
+                setTelefone(
+                    String(
+                        usuarioAtualizado.telefone || ''
+                    ).replace(/\D/g, '')
+                );
+
+
+                // ==================================================
+                // ATUALIZAR FOTO
+                // ==================================================
+
+                if (
+                    usuarioAtualizado.foto_perfil
+                ) {
+
+                    setImagem(
+                        obterUrlFoto(
+                            usuarioAtualizado.foto_perfil,
+                            true
+                        )
+                    );
+
+                } else {
+
+                    setImagem(null);
+                }
+
+
+                // ==================================================
+                // ATUALIZAR LOCALSTORAGE
+                // ==================================================
+
+                const usuarioFinal = {
+
+                    ...usuario,
+
+                    ...usuarioAtualizado,
+
+                    id:
+                        usuarioAtualizado.id_usuario ??
+                        id,
+
+                    id_usuario:
+                        usuarioAtualizado.id_usuario ??
+                        id
+                };
+
+
+                localStorage.setItem(
+                    'usuario',
+                    JSON.stringify(usuarioFinal)
+                );
+
+
+                console.log(
+                    'LOCALSTORAGE ATUALIZADO:',
+                    usuarioFinal
+                );
 
             } catch (error) {
 
                 console.error(
-                    'LOCALSTORAGE INVÁLIDO:',
+                    'ERRO AO BUSCAR PERFIL:',
                     error
                 );
 
-                localStorage.removeItem('usuario');
 
-                navigate('/login', {
-                    replace: true
+                // ==================================================
+                // NÃO APAGAR LOCALSTORAGE AUTOMATICAMENTE
+                // ==================================================
+
+                if (
+                    error.status === 401
+                ) {
+
+                    console.warn(
+                        'Cookie/token não foi aceito pelo servidor.'
+                    );
+
+
+                    setMensagem({
+
+                        informacao:
+                            'Sua sessão não pôde ser validada pelo servidor. Verifique o cookie de autenticação.',
+
+                        tipo:
+                            'erro'
+
+                    });
+
+
+                    /*
+                     * NÃO FAZER:
+                     *
+                     * localStorage.removeItem('usuario')
+                     *
+                     * navigate('/login')
+                     *
+                     * automaticamente.
+                     *
+                     * Isso estava causando a sensação de que
+                     * o localStorage estava sendo apagado sozinho.
+                     */
+
+                    return;
+                }
+
+
+                if (
+                    error.status === 403
+                ) {
+
+                    setMensagem({
+
+                        informacao:
+                            'Você não possui permissão para acessar este perfil.',
+
+                        tipo:
+                            'erro'
+
+                    });
+
+                    return;
+                }
+
+
+                if (
+                    error.status === 404
+                ) {
+
+                    setMensagem({
+
+                        informacao:
+                            'O perfil não foi encontrado no servidor.',
+
+                        tipo:
+                            'erro'
+
+                    });
+
+                    return;
+                }
+
+
+                setMensagem({
+
+                    informacao:
+                        mensagemDaApi(error),
+
+                    tipo:
+                        'erro'
+
                 });
 
             } finally {
 
                 if (ativo) {
-                    setVerificandoLogin(false);
+
+                    setVerificandoLogin(
+                        false
+                    );
                 }
             }
         };
 
+
         carregarUsuario();
 
+
         return () => {
+
             ativo = false;
+
         };
 
     }, [navigate]);
 
 
-    // ==============================
+    // ==================================================
     // ALTERAR FOTO
-    // ==============================
+    // ==================================================
 
     const alterarImagem = (e) => {
 
         const arquivo =
             e.target.files?.[0];
 
+
         if (!arquivo) {
             return;
         }
 
+
         const tiposPermitidos = [
+
             'image/jpeg',
             'image/png',
             'image/webp'
+
         ];
 
-        if (!tiposPermitidos.includes(arquivo.type)) {
+
+        if (
+            !tiposPermitidos.includes(
+                arquivo.type
+            )
+        ) {
 
             setMensagem({
+
                 informacao:
                     'Formato inválido. Use JPG, PNG ou WEBP.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
+
 
             e.target.value = '';
 
             return;
         }
+
 
         const tamanhoMaximo =
             5 * 1024 * 1024;
 
-        if (arquivo.size > tamanhoMaximo) {
+
+        if (
+            arquivo.size >
+            tamanhoMaximo
+        ) {
 
             setMensagem({
+
                 informacao:
                     'A imagem deve ter no máximo 5 MB.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
+
 
             e.target.value = '';
 
             return;
         }
 
-        setArquivoImagem(arquivo);
+
+        setArquivoImagem(
+            arquivo
+        );
+
 
         const url =
-            URL.createObjectURL(arquivo);
+            URL.createObjectURL(
+                arquivo
+            );
+
 
         setImagem(url);
     };
 
 
-    // ==============================
+    // ==================================================
     // EXCLUIR FOTO
-    // ==============================
+    // ==================================================
 
     const excluirImagem = async () => {
 
         if (!idUsuario) {
 
             setMensagem({
+
                 informacao:
                     'Usuário não identificado.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
 
             return;
         }
 
-        if (!imagem && !arquivoImagem) {
+
+        if (
+            !imagem &&
+            !arquivoImagem
+        ) {
 
             setMensagem({
+
                 informacao:
                     'Você não possui uma foto de perfil.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
 
             return;
         }
+
 
         try {
 
@@ -405,35 +647,61 @@ export default function EditarUsuario() {
                     }
                 );
 
+
             setArquivoImagem(null);
             setImagem(null);
 
 
-            // ==============================
+            // ==================================================
             // ATUALIZAR LOCALSTORAGE
-            // ==============================
+            // ==================================================
 
             const usuarioAtual =
                 JSON.parse(
-                    localStorage.getItem('usuario')
+                    localStorage.getItem(
+                        'usuario'
+                    )
                 ) || {};
 
+
             const usuarioAtualizado = {
+
                 ...usuarioAtual,
-                foto_perfil: null
+
+                foto_perfil:
+                    null
+
             };
+
 
             localStorage.setItem(
                 'usuario',
-                JSON.stringify(usuarioAtualizado)
+                JSON.stringify(
+                    usuarioAtualizado
+                )
+            );
+
+
+            // ==================================================
+            // AVISAR HEADER
+            // ==================================================
+
+            window.dispatchEvent(
+                new Event(
+                    'loginAlterado'
+                )
             );
 
 
             setMensagem(
                 dados?.mensagem || {
+
                     informacao:
                         'Foto de perfil excluída com sucesso!',
-                    tipo: 'sucesso'
+
+                    tipo:
+                        'sucesso'
+
                 }
             );
 
@@ -444,74 +712,128 @@ export default function EditarUsuario() {
                 error
             );
 
-            if (error.status === 401) {
 
-                localStorage.removeItem('usuario');
+            // ==================================================
+            // NÃO APAGAR LOCALSTORAGE
+            // ==================================================
 
-                navigate('/login', {
-                    replace: true
+            if (
+                error.status === 401
+            ) {
+
+                setMensagem({
+
+                    informacao:
+                        'Sua sessão não pôde ser validada pelo servidor.',
+
+                    tipo:
+                        'erro'
+
                 });
 
                 return;
             }
 
-            if (error.status === 404) {
+
+            if (
+                error.status === 403
+            ) {
+
+                setMensagem({
+
+                    informacao:
+                        'Você não possui permissão para excluir esta foto.',
+
+                    tipo:
+                        'erro'
+
+                });
+
+                return;
+            }
+
+
+            if (
+                error.status === 404
+            ) {
 
                 setImagem(null);
                 setArquivoImagem(null);
 
+
                 setMensagem({
+
                     informacao:
                         'A foto já não existe no servidor.',
-                    tipo: 'sucesso'
+
+                    tipo:
+                        'sucesso'
+
                 });
 
                 return;
             }
 
+
             setMensagem({
+
                 informacao:
                     mensagemDaApi(error),
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
         }
     };
 
 
-    // ==============================
+    // ==================================================
     // VOLTAR
-    // ==============================
+    // ==================================================
 
     const voltar = () => {
+
         navigate('/');
+
     };
 
 
-    // ==============================
+    // ==================================================
     // SALVAR
-    // ==============================
+    // ==================================================
 
     const salvar = async (e) => {
 
         e.preventDefault();
 
+
         setMensagem(null);
+
+
+        // ==================================================
+        // VERIFICAR ID
+        // ==================================================
 
         if (!idUsuario) {
 
-            localStorage.removeItem('usuario');
+            setMensagem({
 
-            navigate('/login', {
-                replace: true
+                informacao:
+                    'Usuário não identificado.',
+
+                tipo:
+                    'erro'
+
             });
 
             return;
         }
 
 
-        // ==============================
+        // ==================================================
         // VALIDAR SENHA
-        // ==============================
+        // ==================================================
 
         if (
             senha.trim() &&
@@ -519,36 +841,57 @@ export default function EditarUsuario() {
         ) {
 
             setMensagem({
+
                 informacao:
                     'As senhas não coincidem.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
 
             return;
         }
 
 
-        // ==============================
-        // VALIDAR CAMPOS
-        // ==============================
+        // ==================================================
+        // VALIDAR NOME
+        // ==================================================
 
-        if (!nome.trim()) {
+        if (
+            !nome.trim()
+        ) {
 
             setMensagem({
+
                 informacao:
                     'Informe seu nome.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
 
             return;
         }
 
-        if (!email.trim()) {
+
+        // ==================================================
+        // VALIDAR EMAIL
+        // ==================================================
+
+        if (
+            !email.trim()
+        ) {
 
             setMensagem({
+
                 informacao:
                     'Informe seu e-mail.',
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
 
             return;
@@ -557,41 +900,64 @@ export default function EditarUsuario() {
 
         setCarregando(true);
 
+
         try {
 
             const formData =
                 new FormData();
 
 
-            // ==============================
-            // DADOS
-            // ==============================
+            // ==================================================
+            // NOME
+            // ==================================================
 
             formData.append(
                 'nome',
                 nome.trim()
             );
 
+
+            // ==================================================
+            // TELEFONE
+            // ==================================================
+
             const telefoneNumeros =
-                String(telefone || '')
-                    .replace(/\D/g, '');
+                String(
+                    telefone || ''
+                ).replace(
+                    /\D/g,
+                    ''
+                );
+
 
             formData.append(
                 'telefone',
                 telefoneNumeros
             );
 
+
+            // ==================================================
+            // EMAIL
+            // ==================================================
+
             formData.append(
                 'email',
-                email.trim().replace(/\s/g, '')
+                email
+                    .trim()
+                    .replace(
+                        /\s/g,
+                        ''
+                    )
             );
 
 
-            // ==============================
+            // ==================================================
             // SENHA
-            // ==============================
+            // ==================================================
 
-            if (senha.trim()) {
+            if (
+                senha.trim()
+            ) {
 
                 formData.append(
                     'senha',
@@ -600,11 +966,13 @@ export default function EditarUsuario() {
             }
 
 
-            // ==============================
+            // ==================================================
             // FOTO
-            // ==============================
+            // ==================================================
 
-            if (arquivoImagem) {
+            if (
+                arquivoImagem
+            ) {
 
                 formData.append(
                     'foto',
@@ -613,9 +981,9 @@ export default function EditarUsuario() {
             }
 
 
-            // ==============================
-            // BACKEND
-            // ==============================
+            // ==================================================
+            // ENVIAR
+            // ==================================================
 
             const dados =
                 await apiFetch(
@@ -627,19 +995,21 @@ export default function EditarUsuario() {
                 );
 
 
-            // ==============================
+            // ==================================================
             // ATUALIZAR USUÁRIO
-            // ==============================
+            // ==================================================
 
             if (
-                dados &&
-                dados.usuario
+                dados?.usuario
             ) {
 
                 const usuarioAntigo =
                     JSON.parse(
-                        localStorage.getItem('usuario')
+                        localStorage.getItem(
+                            'usuario'
+                        )
                     ) || {};
+
 
                 const usuarioAtualizado = {
 
@@ -649,11 +1019,13 @@ export default function EditarUsuario() {
 
                     id:
                         dados.usuario.id_usuario ??
-                        usuarioAntigo.id,
+                        usuarioAntigo.id ??
+                        idUsuario,
 
                     id_usuario:
                         dados.usuario.id_usuario ??
-                        usuarioAntigo.id_usuario,
+                        usuarioAntigo.id_usuario ??
+                        idUsuario,
 
                     nome:
                         dados.usuario.nome ??
@@ -676,9 +1048,30 @@ export default function EditarUsuario() {
 
                 localStorage.setItem(
                     'usuario',
-                    JSON.stringify(usuarioAtualizado)
+                    JSON.stringify(
+                        usuarioAtualizado
+                    )
                 );
 
+
+                // ==================================================
+                // AVISAR HEADER
+                // ==================================================
+
+                window.dispatchEvent(
+                    new Event(
+                        'loginAlterado'
+                    )
+                );
+
+
+                // ==================================================
+                // ATUALIZAR TELA
+                // ==================================================
+
+                setIdUsuario(
+                    usuarioAtualizado.id_usuario
+                );
 
                 setNome(
                     usuarioAtualizado.nome
@@ -691,7 +1084,10 @@ export default function EditarUsuario() {
                 setTelefone(
                     String(
                         usuarioAtualizado.telefone || ''
-                    ).replace(/\D/g, '')
+                    ).replace(
+                        /\D/g,
+                        ''
+                    )
                 );
 
 
@@ -713,24 +1109,28 @@ export default function EditarUsuario() {
             }
 
 
-            // ==============================
-            // LIMPAR
-            // ==============================
+            // ==================================================
+            // LIMPAR CAMPOS DE SENHA
+            // ==================================================
 
             setSenha('');
             setConfirmarSenha('');
             setArquivoImagem(null);
 
 
-            // ==============================
+            // ==================================================
             // MENSAGEM
-            // ==============================
+            // ==================================================
 
             setMensagem(
                 dados?.mensagem || {
+
                     informacao:
                         'Usuário editado com sucesso!',
-                    tipo: 'sucesso'
+
+                    tipo:
+                        'sucesso'
+
                 }
             );
 
@@ -741,21 +1141,55 @@ export default function EditarUsuario() {
                 error
             );
 
-            if (error.status === 401) {
 
-                localStorage.removeItem('usuario');
+            // ==================================================
+            // NÃO APAGAR LOCALSTORAGE
+            // ==================================================
 
-                navigate('/login', {
-                    replace: true
+            if (
+                error.status === 401
+            ) {
+
+                setMensagem({
+
+                    informacao:
+                        'Sua sessão não pôde ser validada pelo servidor. Os dados locais foram mantidos.',
+
+                    tipo:
+                        'erro'
+
                 });
 
                 return;
             }
 
+
+            if (
+                error.status === 403
+            ) {
+
+                setMensagem({
+
+                    informacao:
+                        'Você não possui permissão para editar este perfil.',
+
+                    tipo:
+                        'erro'
+
+                });
+
+                return;
+            }
+
+
             setMensagem({
+
                 informacao:
                     mensagemDaApi(error),
-                tipo: 'erro'
+
+                tipo:
+                    'erro'
+
             });
 
         } finally {
@@ -765,18 +1199,22 @@ export default function EditarUsuario() {
     };
 
 
-    // ==============================
+    // ==================================================
     // CARREGANDO
-    // ==============================
+    // ==================================================
 
-    if (verificandoLogin) {
+    if (
+        verificandoLogin
+    ) {
+
         return null;
+
     }
 
 
-    // ==============================
+    // ==================================================
     // TELA
-    // ==============================
+    // ==================================================
 
     return (
 
@@ -784,30 +1222,41 @@ export default function EditarUsuario() {
 
             <MensagemCard
                 mensagem={mensagem}
-                fechar={() => setMensagem(null)}
+                fechar={() =>
+                    setMensagem(null)
+                }
             />
 
 
-            {/* ==========================
+            {/* ==================================================
                 FOTO
-            ========================== */}
+            ================================================== */}
 
-            <section className={styles.areaEdicao}>
+            <section
+                className={styles.areaEdicao}
+            >
 
-                <div className={styles.areaFoto}>
+                <div
+                    className={styles.areaFoto}
+                >
 
-                    <div className={styles.foto}>
+                    <div
+                        className={styles.foto}
+                    >
 
                         {imagem ? (
 
                             <img
                                 src={imagem}
+                                alt="Foto de perfil"
                             />
 
                         ) : (
 
                             <FiImage
-                                className={styles.iconeImagem}
+                                className={
+                                    styles.iconeImagem
+                                }
                             />
 
                         )}
@@ -815,10 +1264,14 @@ export default function EditarUsuario() {
                     </div>
 
 
-                    <div className={styles.acoesFoto}>
+                    <div
+                        className={styles.acoesFoto}
+                    >
 
                         <label
-                            className={styles.botaoFoto}
+                            className={
+                                styles.botaoFoto
+                            }
                             title="Alterar foto"
                         >
 
@@ -835,8 +1288,12 @@ export default function EditarUsuario() {
 
                         <button
                             type="button"
-                            className={styles.botaoFoto}
-                            onClick={excluirImagem}
+                            className={
+                                styles.botaoFoto
+                            }
+                            onClick={
+                                excluirImagem
+                            }
                             title="Remover foto"
                         >
 
@@ -849,22 +1306,32 @@ export default function EditarUsuario() {
                 </div>
 
 
-                {/* ==========================
+                {/* ==================================================
                     FORMULÁRIO
-                ========================== */}
+                ================================================== */}
 
-                <div className={styles.areaFormulario}>
+                <div
+                    className={
+                        styles.areaFormulario
+                    }
+                >
 
                     <h1>
                         EDITAR SUAS INFORMAÇÕES
                     </h1>
 
 
-                    <form onSubmit={salvar}>
+                    <form
+                        onSubmit={salvar}
+                    >
 
                         {/* NOME */}
 
-                        <div className={styles.grupoEntrada}>
+                        <div
+                            className={
+                                styles.grupoEntrada
+                            }
+                        >
 
                             <label htmlFor="nome">
                                 Nome
@@ -875,7 +1342,9 @@ export default function EditarUsuario() {
                                 type="text"
                                 value={nome}
                                 onChange={(e) =>
-                                    setNome(e.target.value)
+                                    setNome(
+                                        e.target.value
+                                    )
                                 }
                                 required
                             />
@@ -885,7 +1354,11 @@ export default function EditarUsuario() {
 
                         {/* TELEFONE */}
 
-                        <div className={styles.grupoEntrada}>
+                        <div
+                            className={
+                                styles.grupoEntrada
+                            }
+                        >
 
                             <label htmlFor="telefone">
                                 Telefone
@@ -907,7 +1380,11 @@ export default function EditarUsuario() {
 
                         {/* EMAIL */}
 
-                        <div className={styles.grupoEntrada}>
+                        <div
+                            className={
+                                styles.grupoEntrada
+                            }
+                        >
 
                             <label htmlFor="email">
                                 E-mail
@@ -918,7 +1395,9 @@ export default function EditarUsuario() {
                                 type="email"
                                 value={email}
                                 onChange={(e) =>
-                                    setEmail(e.target.value)
+                                    setEmail(
+                                        e.target.value
+                                    )
                                 }
                                 required
                             />
@@ -928,7 +1407,11 @@ export default function EditarUsuario() {
 
                         {/* SENHA */}
 
-                        <div className={styles.grupoEntrada}>
+                        <div
+                            className={
+                                styles.grupoEntrada
+                            }
+                        >
 
                             <label htmlFor="senha">
                                 Nova senha
@@ -940,7 +1423,9 @@ export default function EditarUsuario() {
                                 placeholder="Digite uma nova senha"
                                 value={senha}
                                 onChange={(e) =>
-                                    setSenha(e.target.value)
+                                    setSenha(
+                                        e.target.value
+                                    )
                                 }
                             />
 
@@ -949,9 +1434,15 @@ export default function EditarUsuario() {
 
                         {/* CONFIRMAR SENHA */}
 
-                        <div className={styles.grupoEntrada}>
+                        <div
+                            className={
+                                styles.grupoEntrada
+                            }
+                        >
 
-                            <label htmlFor="confirmarSenha">
+                            <label
+                                htmlFor="confirmarSenha"
+                            >
                                 Confirmar nova senha
                             </label>
 
@@ -961,7 +1452,9 @@ export default function EditarUsuario() {
                                 placeholder="Digite a nova senha novamente"
                                 value={confirmarSenha}
                                 onChange={(e) =>
-                                    setConfirmarSenha(e.target.value)
+                                    setConfirmarSenha(
+                                        e.target.value
+                                    )
                                 }
                             />
 
@@ -970,19 +1463,28 @@ export default function EditarUsuario() {
 
                         {/* BOTÕES */}
 
-                        <div className={styles.botoes}>
+                        <div
+                            className={
+                                styles.botoes
+                            }
+                        >
 
                             <button
                                 type="button"
-                                className={styles.botaoVoltar}
+                                className={
+                                    styles.botaoVoltar
+                                }
                                 onClick={voltar}
                             >
                                 Voltar
                             </button>
 
+
                             <button
                                 type="submit"
-                                className={styles.botaoSalvar}
+                                className={
+                                    styles.botaoSalvar
+                                }
                                 disabled={carregando}
                             >
 

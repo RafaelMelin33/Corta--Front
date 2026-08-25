@@ -16,19 +16,81 @@ import {
     FiX
 } from "react-icons/fi";
 
+const API_URL = "http://localhost:5000";
 
 export default function Header() {
 
     const navigate = useNavigate();
-
 
     // ==========================================================
     // ESTADOS
     // ==========================================================
 
     const [logado, setLogado] = useState(false);
-
+    const [fotoPerfil, setFotoPerfil] = useState(null);
+    const [nomeUsuario, setNomeUsuario] = useState("");
     const [menuAberto, setMenuAberto] = useState(false);
+
+
+    // ==========================================================
+    // URL DA FOTO
+    // ==========================================================
+
+    const obterUrlFoto = (
+        foto,
+        atualizarCache = false
+    ) => {
+
+        if (!foto) {
+            return null;
+        }
+
+
+        if (foto.startsWith("blob:")) {
+            return foto;
+        }
+
+
+        let url;
+
+
+        if (
+            foto.startsWith("http://") ||
+            foto.startsWith("https://")
+        ) {
+
+            url = foto;
+
+        } else if (
+            foto.startsWith("/")
+        ) {
+
+            url = `${API_URL}${foto}`;
+
+        } else {
+
+            url =
+                `${API_URL}/uploads/perfil/${foto}`;
+
+        }
+
+
+        // ==================================================
+        // CACHE BUSTING
+        // ==================================================
+        // Mesmo se a imagem nova tiver o mesmo nome,
+        // o navegador será obrigado a buscar novamente.
+
+        if (atualizarCache) {
+
+            url +=
+                `${url.includes("?") ? "&" : "?"}t=${Date.now()}`;
+
+        }
+
+
+        return url;
+    };
 
 
     // ==========================================================
@@ -43,54 +105,66 @@ export default function Header() {
                 localStorage.getItem("usuario");
 
 
-            // ------------------------------------------
-            // NÃO ESTÁ LOGADO
-            // ------------------------------------------
-
             if (!usuarioSalvo) {
 
                 setLogado(false);
+                setFotoPerfil(null);
+                setNomeUsuario("");
 
                 return;
-
             }
 
-
-            // ------------------------------------------
-            // CONVERTER USUÁRIO
-            // ------------------------------------------
 
             const usuario =
                 JSON.parse(usuarioSalvo);
 
-
-            // ------------------------------------------
-            // PEGAR ID
-            // ------------------------------------------
 
             const id =
                 usuario?.id_usuario ??
                 usuario?.id;
 
 
-            // ------------------------------------------
-            // USUÁRIO INVÁLIDO
-            // ------------------------------------------
-
             if (!id) {
 
                 setLogado(false);
+                setFotoPerfil(null);
+                setNomeUsuario("");
 
                 return;
-
             }
 
 
-            // ------------------------------------------
+            // ==================================================
             // USUÁRIO LOGADO
-            // ------------------------------------------
+            // ==================================================
 
             setLogado(true);
+
+            setNomeUsuario(
+                usuario?.nome || ""
+            );
+
+
+            // ==================================================
+            // FOTO
+            // ==================================================
+
+            if (
+                usuario?.foto_perfil
+            ) {
+
+                setFotoPerfil(
+                    obterUrlFoto(
+                        usuario.foto_perfil,
+                        true
+                    )
+                );
+
+            } else {
+
+                setFotoPerfil(null);
+
+            }
 
 
         } catch (erro) {
@@ -101,6 +175,8 @@ export default function Header() {
             );
 
             setLogado(false);
+            setFotoPerfil(null);
+            setNomeUsuario("");
 
         }
 
@@ -116,9 +192,9 @@ export default function Header() {
         verificarLogin();
 
 
-        // ------------------------------------------
-        // ATUALIZAR LOGIN
-        // ------------------------------------------
+        // ==================================================
+        // ATUALIZAR HEADER
+        // ==================================================
 
         const atualizarLogin = () => {
 
@@ -127,11 +203,29 @@ export default function Header() {
         };
 
 
+        // ==================================================
+        // LOGIN / USUÁRIO ALTERADO
+        // ==================================================
+
         window.addEventListener(
             "loginAlterado",
             atualizarLogin
         );
 
+
+        // ==================================================
+        // FOTO ALTERADA
+        // ==================================================
+
+        window.addEventListener(
+            "fotoPerfilAlterada",
+            atualizarLogin
+        );
+
+
+        // ==================================================
+        // STORAGE
+        // ==================================================
 
         window.addEventListener(
             "storage",
@@ -139,14 +233,20 @@ export default function Header() {
         );
 
 
-        // ------------------------------------------
+        // ==================================================
         // LIMPEZA
-        // ------------------------------------------
+        // ==================================================
 
         return () => {
 
             window.removeEventListener(
                 "loginAlterado",
+                atualizarLogin
+            );
+
+
+            window.removeEventListener(
+                "fotoPerfilAlterada",
                 atualizarLogin
             );
 
@@ -162,7 +262,7 @@ export default function Header() {
 
 
     // ==========================================================
-    // ABRIR / FECHAR MENU
+    // MENU
     // ==========================================================
 
     const alternarMenu = () => {
@@ -174,10 +274,6 @@ export default function Header() {
     };
 
 
-    // ==========================================================
-    // FECHAR MENU
-    // ==========================================================
-
     const fecharMenu = () => {
 
         setMenuAberto(false);
@@ -186,7 +282,7 @@ export default function Header() {
 
 
     // ==========================================================
-    // ABRIR PERFIL
+    // PERFIL
     // ==========================================================
 
     const abrirPerfil = () => {
@@ -204,57 +300,43 @@ export default function Header() {
 
     const sair = () => {
 
-        // ------------------------------------------
-        // REMOVER USUÁRIO
-        // ------------------------------------------
+        localStorage.removeItem("usuario");
 
-        localStorage.removeItem(
-            "usuario"
-        );
+        localStorage.removeItem("access_token");
 
+        localStorage.removeItem("token");
 
-        // ------------------------------------------
-        // REMOVER TOKEN
-        // ------------------------------------------
-
-        localStorage.removeItem(
-            "access_token"
-        );
-
-
-        localStorage.removeItem(
-            "token"
-        );
-
-
-        // ------------------------------------------
-        // ATUALIZAR ESTADO
-        // ------------------------------------------
 
         setLogado(false);
 
+        setFotoPerfil(null);
 
-        // ------------------------------------------
-        // FECHAR MENU
-        // ------------------------------------------
+        setNomeUsuario("");
 
         setMenuAberto(false);
 
-
-        // ------------------------------------------
-        // AVISAR O SISTEMA
-        // ------------------------------------------
 
         window.dispatchEvent(
             new Event("loginAlterado")
         );
 
 
-        // ------------------------------------------
-        // IR PARA LOGIN
-        // ------------------------------------------
-
         navigate("/login");
+
+    };
+
+
+    // ==========================================================
+    // ERRO NA FOTO
+    // ==========================================================
+
+    const erroFoto = () => {
+
+        console.warn(
+            "Não foi possível carregar a foto de perfil."
+        );
+
+        setFotoPerfil(null);
 
     };
 
@@ -268,7 +350,6 @@ export default function Header() {
         <header className={estilo.header}>
 
             <div className={estilo.container}>
-
 
                 {/* ==================================================
                     LOGO
@@ -318,15 +399,15 @@ export default function Header() {
                 ================================================== */}
 
                 <nav
-                    className={`
-                        ${estilo.menu}
-                        ${menuAberto ? estilo.menuAberto : ""}
-                    `}
+                    className={`${estilo.menu} ${
+                        menuAberto
+                            ? estilo.menuAberto
+                            : ""
+                    }`}
                 >
 
-
                     {/* ==================================================
-                        USUÁRIO DESLOGADO
+                        DESLOGADO
                     ================================================== */}
 
                     {!logado && (
@@ -356,7 +437,7 @@ export default function Header() {
 
 
                     {/* ==================================================
-                        USUÁRIO LOGADO
+                        LOGADO
                     ================================================== */}
 
                     {logado && (
@@ -382,7 +463,7 @@ export default function Header() {
 
 
                             {/* ==================================================
-                                PERFIL
+                                FOTO DO USUÁRIO
                             ================================================== */}
 
                             <button
@@ -392,7 +473,23 @@ export default function Header() {
                                 aria-label="Editar usuário"
                             >
 
-                                <FiUser />
+                                {fotoPerfil ? (
+
+                                    <img
+                                        src={fotoPerfil}
+                                        alt={
+                                            nomeUsuario ||
+                                            "Foto de perfil"
+                                        }
+                                        className={estilo.fotoPerfil}
+                                        onError={erroFoto}
+                                    />
+
+                                ) : (
+
+                                    <FiUser />
+
+                                )}
 
                             </button>
 

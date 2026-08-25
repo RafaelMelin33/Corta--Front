@@ -44,7 +44,6 @@
 
 /* ==================================================
    BOTÃO HAMBÚRGUER
-   ESCONDIDO POR PADRÃO
 ================================================== */
 
 .menuMobile {
@@ -304,6 +303,10 @@
 
     cursor: pointer;
 
+    overflow: hidden;
+
+    flex-shrink: 0;
+
     transition:
             transform 0.25s ease,
             background-color 0.25s ease,
@@ -316,6 +319,22 @@
     color: #666;
 
     transform: scale(1.05);
+}
+
+
+/* ==================================================
+   FOTO DO PERFIL
+================================================== */
+
+.fotoPerfil {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    border-radius: 50%;
 }
 
 
@@ -343,7 +362,7 @@
 
 
     /* ==============================================
-       MOSTRAR HAMBÚRGUER
+       HAMBÚRGUER
     ============================================== */
 
     .menuMobile {

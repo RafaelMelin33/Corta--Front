@@ -1,6 +1,17 @@
-export const API_URL =
-    import.meta.env.VITE_API_URL || 'http://10.92.11.50:5000';
+// ==========================================================
+// URL DA API
+// ==========================================================
 
+const API_HOST = window.location.hostname;
+
+export const API_URL =
+    import.meta.env.VITE_API_URL ||
+    `http://${API_HOST}:5000`;
+
+
+// ==========================================================
+// API FETCH
+// ==========================================================
 
 export async function apiFetch(endpoint, options = {}) {
 
@@ -8,31 +19,48 @@ export async function apiFetch(endpoint, options = {}) {
         ...(options.headers || {})
     };
 
+
     // ======================================================
-    // SE NÃO FOR FormData, ENVIA JSON
+    // JSON
     // ======================================================
 
-    if (!(options.body instanceof FormData)) {
+    if (
+        options.body &&
+        !(options.body instanceof FormData)
+    ) {
 
         headers['Content-Type'] =
             'application/json';
     }
+
+
+    // ======================================================
+    // REQUISIÇÃO
+    // ======================================================
 
     const resposta = await fetch(
         `${API_URL}${endpoint}`,
         {
             ...options,
 
+            // IMPORTANTE:
+            // permite o envio automático do cookie
             credentials: 'include',
 
             headers
         }
     );
 
+
+    // ======================================================
+    // LER RESPOSTA
+    // ======================================================
+
     const texto =
         await resposta.text();
 
     let dados = {};
+
 
     try {
 
@@ -57,6 +85,11 @@ export async function apiFetch(endpoint, options = {}) {
         };
     }
 
+
+    // ======================================================
+    // TRATAR ERRO HTTP
+    // ======================================================
+
     if (!resposta.ok) {
 
         const erro =
@@ -80,9 +113,14 @@ export async function apiFetch(endpoint, options = {}) {
         throw erro;
     }
 
+
     return dados;
 }
 
+
+// ==========================================================
+// MENSAGEM DA API
+// ==========================================================
 
 export function mensagemDaApi(erro) {
 

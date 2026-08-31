@@ -463,6 +463,7 @@ export default function Header() {
 
                             <button
                                 type="button"
+                                id = "bnt-sair"
                                 className={estilo.sair}
                                 onClick={sair}
                             >

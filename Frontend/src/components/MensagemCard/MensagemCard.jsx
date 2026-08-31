@@ -55,13 +55,14 @@ export default function MensagemCard({
                 </h2>
 
 
-                <p>
+                <p id = "mensagem">
                     {mensagem.informacao}
                 </p>
 
 
                 <button
                     type="button"
+                    id='button-confirmar'
                     className={styles.botao}
                     onClick={fechar}
                 >

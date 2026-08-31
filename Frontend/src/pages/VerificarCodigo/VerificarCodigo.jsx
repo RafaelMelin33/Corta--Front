@@ -69,6 +69,7 @@ export default function VerificarCodigo() {
                         mask="000000"
                         type="text"
                         inputMode="numeric"
+                        id="input-codigo"
                         value={codigo}
                         onAccept={(value) => setCodigo(value)}
                         className={styles.codigo}

@@ -50,7 +50,7 @@
 
 .acoesFoto {
     display: flex;
-    gap: 14px;
+    gap: 17px;
     margin-top: 12px;
 }
 
@@ -143,34 +143,49 @@
     margin-top: 32px;
 }
 
-.botoes button {
-    width: 160px;
-    height: 40px;
-    border-radius: 7px;
-    font-size: 14px;
-    font-weight: 700;
+.botaoVoltar {
+    width: 200px;
+    max-width: 100%;
+    padding: 10px 12px;
+    background-color: var(--cor-botao-2);
+    border: 1.5px solid var(--cor-confirmar);
+    color: var(--cor-confirmar);
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 800;
+
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.botaoVoltar {
-    border: 1px solid var(--cor-texto);
-    background-color: var(--cor-botao-2);
-    color: var(--cor-texto);
-}
+
 
 .botaoVoltar:hover {
-    background-color: var(--cor-card);
+    background-color: #f5f5f5;
     transform: translateY(-2px);
 }
 
 .botaoSalvar {
+    width: 200px;
+    max-width: 100%;
+    padding: 10px 12px;
     background-color: var(--cor-confirmar);
     color: var(--cor-texto-2);
+    border: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+
 }
 
 .botaoSalvar:hover {
-    background-color: var(--cor-destaque);
-    color: var(--cor-texto);
+    background-color: #222222;
     transform: translateY(-2px);
+}
+
+.acoesFormulario{
+    display: flex;
+    gap: 16px;
 }

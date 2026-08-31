@@ -139,18 +139,6 @@ export default function EditarUsuario() {
                         'Nenhum usuário encontrado no localStorage.'
                     );
 
-                    /*
-                     * IMPORTANTE:
-                     *
-                     * Não removemos nada aqui.
-                     *
-                     * O cookie é a autenticação real.
-                     *
-                     * Se não houver localStorage, tentamos
-                     * verificar o perfil somente se houver
-                     * uma forma de obter o ID.
-                     */
-
                     navigate('/login', {
                         replace: true
                     });
@@ -176,12 +164,6 @@ export default function EditarUsuario() {
                         'ERRO AO LER USUÁRIO:',
                         erro
                     );
-
-                    /*
-                     * Não usamos localStorage.clear().
-                     *
-                     * Apenas removemos o registro inválido.
-                     */
 
                     localStorage.removeItem(
                         'usuario'
@@ -397,10 +379,6 @@ export default function EditarUsuario() {
                 );
 
 
-                // ==================================================
-                // NÃO APAGAR LOCALSTORAGE AUTOMATICAMENTE
-                // ==================================================
-
                 if (
                     error.status === 401
                 ) {
@@ -419,20 +397,6 @@ export default function EditarUsuario() {
                             'erro'
 
                     });
-
-
-                    /*
-                     * NÃO FAZER:
-                     *
-                     * localStorage.removeItem('usuario')
-                     *
-                     * navigate('/login')
-                     *
-                     * automaticamente.
-                     *
-                     * Isso estava causando a sensação de que
-                     * o localStorage estava sendo apagado sozinho.
-                     */
 
                     return;
                 }
@@ -713,10 +677,6 @@ export default function EditarUsuario() {
             );
 
 
-            // ==================================================
-            // NÃO APAGAR LOCALSTORAGE
-            // ==================================================
-
             if (
                 error.status === 401
             ) {
@@ -811,10 +771,6 @@ export default function EditarUsuario() {
         setMensagem(null);
 
 
-        // ==================================================
-        // VERIFICAR ID
-        // ==================================================
-
         if (!idUsuario) {
 
             setMensagem({
@@ -830,10 +786,6 @@ export default function EditarUsuario() {
             return;
         }
 
-
-        // ==================================================
-        // VALIDAR SENHA
-        // ==================================================
 
         if (
             senha.trim() &&
@@ -854,10 +806,6 @@ export default function EditarUsuario() {
         }
 
 
-        // ==================================================
-        // VALIDAR NOME
-        // ==================================================
-
         if (
             !nome.trim()
         ) {
@@ -875,10 +823,6 @@ export default function EditarUsuario() {
             return;
         }
 
-
-        // ==================================================
-        // VALIDAR EMAIL
-        // ==================================================
 
         if (
             !email.trim()
@@ -907,19 +851,11 @@ export default function EditarUsuario() {
                 new FormData();
 
 
-            // ==================================================
-            // NOME
-            // ==================================================
-
             formData.append(
                 'nome',
                 nome.trim()
             );
 
-
-            // ==================================================
-            // TELEFONE
-            // ==================================================
 
             const telefoneNumeros =
                 String(
@@ -936,10 +872,6 @@ export default function EditarUsuario() {
             );
 
 
-            // ==================================================
-            // EMAIL
-            // ==================================================
-
             formData.append(
                 'email',
                 email
@@ -950,10 +882,6 @@ export default function EditarUsuario() {
                     )
             );
 
-
-            // ==================================================
-            // SENHA
-            // ==================================================
 
             if (
                 senha.trim()
@@ -966,10 +894,6 @@ export default function EditarUsuario() {
             }
 
 
-            // ==================================================
-            // FOTO
-            // ==================================================
-
             if (
                 arquivoImagem
             ) {
@@ -981,10 +905,6 @@ export default function EditarUsuario() {
             }
 
 
-            // ==================================================
-            // ENVIAR
-            // ==================================================
-
             const dados =
                 await apiFetch(
                     `/editar-usuario/${idUsuario}`,
@@ -994,10 +914,6 @@ export default function EditarUsuario() {
                     }
                 );
 
-
-            // ==================================================
-            // ATUALIZAR USUÁRIO
-            // ==================================================
 
             if (
                 dados?.usuario
@@ -1054,20 +970,12 @@ export default function EditarUsuario() {
                 );
 
 
-                // ==================================================
-                // AVISAR HEADER
-                // ==================================================
-
                 window.dispatchEvent(
                     new Event(
                         'loginAlterado'
                     )
                 );
 
-
-                // ==================================================
-                // ATUALIZAR TELA
-                // ==================================================
 
                 setIdUsuario(
                     usuarioAtualizado.id_usuario
@@ -1109,18 +1017,10 @@ export default function EditarUsuario() {
             }
 
 
-            // ==================================================
-            // LIMPAR CAMPOS DE SENHA
-            // ==================================================
-
             setSenha('');
             setConfirmarSenha('');
             setArquivoImagem(null);
 
-
-            // ==================================================
-            // MENSAGEM
-            // ==================================================
 
             setMensagem(
                 dados?.mensagem || {
@@ -1141,10 +1041,6 @@ export default function EditarUsuario() {
                 error
             );
 
-
-            // ==================================================
-            // NÃO APAGAR LOCALSTORAGE
-            // ==================================================
 
             if (
                 error.status === 401
@@ -1199,10 +1095,6 @@ export default function EditarUsuario() {
     };
 
 
-    // ==================================================
-    // CARREGANDO
-    // ==================================================
-
     if (
         verificandoLogin
     ) {
@@ -1211,10 +1103,6 @@ export default function EditarUsuario() {
 
     }
 
-
-    // ==================================================
-    // TELA
-    // ==================================================
 
     return (
 
@@ -1278,6 +1166,7 @@ export default function EditarUsuario() {
                             <FiEdit2 />
 
                             <input
+                                id="btn-alterar-foto"
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
                                 onChange={alterarImagem}
@@ -1287,6 +1176,7 @@ export default function EditarUsuario() {
 
 
                         <button
+                            id="btn-remover-foto"
                             type="button"
                             className={
                                 styles.botaoFoto
@@ -1414,19 +1304,19 @@ export default function EditarUsuario() {
                         >
 
                             <label htmlFor="senha">
-                                Nova senha
+                                Nova Senha
                             </label>
 
                             <input
                                 id="senha"
                                 type="password"
-                                placeholder="Digite uma nova senha"
                                 value={senha}
                                 onChange={(e) =>
                                     setSenha(
                                         e.target.value
                                     )
                                 }
+                                placeholder="Deixe em branco para não alterar"
                             />
 
                         </div>
@@ -1440,59 +1330,57 @@ export default function EditarUsuario() {
                             }
                         >
 
-                            <label
-                                htmlFor="confirmarSenha"
-                            >
-                                Confirmar nova senha
+                            <label htmlFor="confirmarSenha">
+                                Confirmar Senha
                             </label>
 
                             <input
                                 id="confirmarSenha"
                                 type="password"
-                                placeholder="Digite a nova senha novamente"
                                 value={confirmarSenha}
                                 onChange={(e) =>
                                     setConfirmarSenha(
                                         e.target.value
                                     )
                                 }
+                                placeholder="Confirme a nova senha"
                             />
 
                         </div>
 
 
-                        {/* BOTÕES */}
+                        {/* AÇÕES DO FORMULÁRIO */}
 
                         <div
                             className={
-                                styles.botoes
+                                styles.acoesFormulario
                             }
                         >
 
                             <button
+                                id="btn-voltar"
                                 type="button"
                                 className={
                                     styles.botaoVoltar
                                 }
                                 onClick={voltar}
+                                disabled={carregando}
                             >
                                 Voltar
                             </button>
 
 
                             <button
+                                id="btn-salvar"
                                 type="submit"
                                 className={
                                     styles.botaoSalvar
                                 }
                                 disabled={carregando}
                             >
-
                                 {carregando
                                     ? 'Salvando...'
-                                    : 'Salvar'
-                                }
-
+                                    : 'Salvar'}
                             </button>
 
                         </div>
@@ -1504,5 +1392,6 @@ export default function EditarUsuario() {
             </section>
 
         </main>
+
     );
 }

@@ -14,7 +14,7 @@ export default function Home() {
                     <div className={styles.heroCards}>
 
                         {/* Card 1 - Ícone de Relógio */}
-                        <div className={styles.card}>
+                        <div id="card-agendamento-agil" className={styles.card}>
                             <div className={styles.cardIcon}>
                                 <LuClock size={40} className={styles.icon} />
                             </div>
@@ -23,7 +23,7 @@ export default function Home() {
                         </div>
 
                         {/* Card 2 - Ícone de Tesoura/Navalha */}
-                        <div className={styles.card}>
+                        <div id="card-atendimento-tecnico" className={styles.card}>
                             <div className={styles.cardIcon}>
                                 <LuScissors size={40} className={styles.icon} />
                             </div>
@@ -34,7 +34,7 @@ export default function Home() {
                         </div>
 
                         {/* Card 3 - Ícone de IA/Visagismo */}
-                        <div className={styles.card}>
+                        <div id="card-visagismo-digital" className={styles.card}>
                             <div className={styles.cardIcon}>
                                 <LuSparkles size={40} className={styles.icon} />
                             </div>

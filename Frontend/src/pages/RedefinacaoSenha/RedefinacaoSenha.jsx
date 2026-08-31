@@ -479,6 +479,7 @@ export default function RedefinicaoSenha() {
             ================================================== */}
 
             <button
+                id="btn-voltar"
                 type="button"
                 className={styles.botaoVoltar}
                 onClick={voltar}
@@ -649,6 +650,7 @@ export default function RedefinicaoSenha() {
 
 
                                 <button
+                                    id="btn-enviar-codigo"
                                     type="submit"
                                     className={
                                         styles.botaoEnviar
@@ -738,6 +740,7 @@ export default function RedefinicaoSenha() {
 
 
                                 <button
+                                    id="btn-confirmar-codigo"
                                     type="submit"
                                     className={
                                         styles.botaoEnviar
@@ -876,6 +879,7 @@ export default function RedefinicaoSenha() {
 
 
                                 <button
+                                    id="btn-redefinir-senha"
                                     type="submit"
                                     className={
                                         styles.botaoEnviar

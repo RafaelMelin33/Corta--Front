@@ -347,6 +347,8 @@ export default function Cadastro() {
 
                         <button
                             type="submit"
+                            id = "cadastrar"
+                            name = "cadastrar"
                             className={styles.botaoCadastrar}
                             disabled={carregando}
                         >
@@ -373,6 +375,7 @@ export default function Cadastro() {
 
                         <button
                             type="button"
+                            id ="login"
                             className={styles.botaoLogin}
                             onClick={() =>
                                 navigate('/login')

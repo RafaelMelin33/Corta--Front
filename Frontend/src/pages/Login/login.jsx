@@ -116,15 +116,6 @@ export default function Login() {
             // ==========================================
             // AVISAR O HEADER
             // ==========================================
-            //
-            // IMPORTANTE:
-            //
-            // O evento "storage" não é disparado
-            // automaticamente na mesma aba.
-            //
-            // Por isso criamos nosso próprio evento.
-            //
-            // ==========================================
 
             window.dispatchEvent(
                 new Event('loginAlterado')
@@ -379,6 +370,7 @@ export default function Login() {
                         >
 
                             <Link
+                                id="btn-esqueci-senha"
                                 to="/redefinirsenha"
                                 className={
                                     styles.forgotPasswordLink
@@ -395,6 +387,7 @@ export default function Login() {
                         ========================================== */}
 
                         <button
+                            id="btn-entrar"
                             type="submit"
                             className={
                                 styles.btnEntrar
@@ -431,6 +424,7 @@ export default function Login() {
                         </p>
 
                         <Link
+                            id="btn-cadastre-se"
                             to="/cadastro"
                             className={
                                 styles.btnCadastreSe

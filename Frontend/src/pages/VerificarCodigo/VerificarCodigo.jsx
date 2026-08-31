@@ -76,7 +76,11 @@ export default function VerificarCodigo() {
                         required
                     />
 
-                    <button type="submit" disabled={carregando}>
+                    <button
+                        id="btn-confirmar-email"
+                        type="submit"
+                        disabled={carregando}
+                    >
                         {carregando ? 'VERIFICANDO...' : 'CONFIRMAR E-MAIL'}
                     </button>
                 </form>

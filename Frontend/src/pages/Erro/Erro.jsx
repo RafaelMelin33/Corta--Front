@@ -35,6 +35,7 @@ export default function Erro() {
                 <div className={estilo.botoes}>
 
                     <button
+                        id="btn-voltar"
                         className={estilo.voltar}
                         onClick={() => navigate(-1)}
                     >
@@ -43,6 +44,7 @@ export default function Erro() {
                     </button>
 
                     <Link
+                        id="btn-pagina-inicial"
                         to="/"
                         className={estilo.inicio}
                     >

@@ -75,7 +75,10 @@ export default function Estabelecimento() {
                             nossos clientes.
                         </p>
 
-                        <button className={styles.botaoAgendar}>
+                        <button
+                            id="btn-agendar-topo"
+                            className={styles.botaoAgendar}
+                        >
                             Agendar Agora
                         </button>
                     </div>
@@ -97,6 +100,7 @@ export default function Estabelecimento() {
 
                         <div className={styles.abas}>
                             <button
+                                id="btn-aba-servicos"
                                 className={
                                     categoria === 'Serviços'
                                         ? styles.abaAtiva
@@ -108,6 +112,7 @@ export default function Estabelecimento() {
                             </button>
 
                             <button
+                                id="btn-aba-profissionais"
                                 className={
                                     categoria === 'Profissionais'
                                         ? styles.abaAtiva
@@ -217,7 +222,10 @@ export default function Estabelecimento() {
                             </div>
                         </div>
 
-                        <button className={styles.botaoAgendarGrande}>
+                        <button
+                            id="btn-agendar-lateral"
+                            className={styles.botaoAgendarGrande}
+                        >
                             <FiCalendar />
                             AGENDAR AGORA
                         </button>

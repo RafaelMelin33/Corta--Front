@@ -8,55 +8,68 @@
 }
 
 .conteudo {
-    width: 950px;
-    padding: 25px 30px 55px;
+    width: 1100px;
+    padding: 40px 35px 70px;
 }
+
+/* =========================
+   APRESENTAÇÃO
+========================= */
 
 .apresentacao {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 38px;
+    margin-bottom: 50px;
 }
 
 .informacoes {
-    width: 390px;
+    width: 470px;
 }
 
 .selo {
     display: inline-block;
-    padding: 4px 8px;
-    margin-bottom: 8px;
-    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border-radius: 5px;
     background-color: var(--cor-destaque);
     color: var(--cor-texto);
-    font-size: 7px;
+    font-size: 11px;
     font-weight: 800;
-    letter-spacing: .4px;
+    letter-spacing: .5px;
 }
 
 .informacoes h1 {
-    margin-bottom: 10px;
+    margin-bottom: 14px;
     color: var(--cor-destaque);
-    font-size: 32px;
+    font-size: 42px;
     font-weight: 800;
 }
 
+.informacoes h3 {
+    font-size: 15px;
+}
+
+.informacoes span {
+    color: var(--cor-texto);
+}
+
 .informacoes p {
-    width: 340px;
-    margin-bottom: 15px;
+    width: 430px;
+    margin-bottom: 22px;
     color: var(--cor-texto-categorizante);
-    font-size: 9px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.7;
 }
 
 .botaoAgendar {
-    width: 120px;
-    height: 29px;
-    border-radius: 6px;
+    width: 155px;
+    height: 40px;
+    border: none;
+    border-radius: 7px;
     background-color: var(--cor-destaque);
     color: var(--cor-texto);
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
@@ -68,10 +81,10 @@
 }
 
 .imagemContainer {
-    width: 420px;
-    height: 175px;
+    width: 480px;
+    height: 220px;
     overflow: hidden;
-    border-radius: 14px;
+    border-radius: 16px;
 }
 
 .imagemContainer img {
@@ -80,54 +93,66 @@
     object-fit: cover;
 }
 
+/* =========================
+   ÁREA PRINCIPAL
+========================= */
+
 .areaPrincipal {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 55px;
+    gap: 60px;
 }
 
 .servicos {
-    width: 500px;
+    width: 580px;
 }
+
+/* =========================
+   TÍTULO DA SEÇÃO
+========================= */
 
 .tituloSecao {
     display: flex;
     align-items: center;
-    gap: 7px;
-    margin-bottom: 20px;
+    gap: 9px;
+    margin-bottom: 25px;
 }
 
 .tituloSecao span {
-    width: 4px;
-    height: 12px;
-    border-radius: 2px;
+    width: 5px;
+    height: 18px;
+    border-radius: 3px;
     background-color: var(--cor-destaque);
 }
 
 .tituloSecao h2 {
     color: var(--cor-texto-2);
-    font-size: 12px;
+    font-size: 19px;
     font-weight: 800;
 }
 
+/* =========================
+   ABAS
+========================= */
+
 .abas {
-    width: 110px;
-    height: 20px;
+    width: 170px;
+    height: 34px;
     display: flex;
     margin-left: 2px;
-    margin-bottom: 22px;
-    border-radius: 5px;
+    margin-bottom: 25px;
+    border-radius: 6px;
     overflow: hidden;
     background-color: var(--cor-card-b);
 }
 
 .abas button {
-    width: 55px;
+    width: 85px;
     border: none;
     background-color: var(--cor-card-b);
     color: var(--cor-texto-categorizante);
-    font-size: 6px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -137,69 +162,87 @@
     color: var(--cor-texto);
 }
 
+/* =========================
+   LISTAS
+========================= */
+
 .listaServicos {
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 10px;
 }
 
 .listaProfissionais {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
+
+/* =========================
+   PROFISSIONAIS
+========================= */
 
 .profissional {
     width: 100%;
-    height: 48px;
-    padding: 6px 10px;
+    min-height: 65px;
+    padding: 9px 13px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-radius: 6px;
+    gap: 13px;
+    border-radius: 8px;
     background-color: var(--cor-card);
     color: var(--cor-texto);
 }
 
 .iconeProfissional {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
+    flex-shrink: 0;
+    border-radius: 7px;
     background-color: var(--cor-card-b);
     color: var(--cor-texto-2);
 }
 
 .iconeProfissional svg {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
 }
 
 .profissional h3 {
-    font-size: 9px;
+    margin-bottom: 4px;
+    font-size: 14px;
 }
 
 .profissional span {
     color: var(--cor-texto-categorizante);
-    font-size: 7px;
+    font-size: 11px;
 }
 
+/* =========================
+   LATERAL
+========================= */
+
 .lateral {
-    width: 310px;
+    width: 360px;
 }
+
+/* =========================
+   CARD DE INFORMAÇÕES
+========================= */
 
 .cardInformacoes {
     width: 100%;
-    padding: 15px;
-    border-radius: 13px;
+    padding: 20px;
+    border-radius: 15px;
     background-color: var(--cor-card);
     color: var(--cor-texto);
 }
 
 .bloco {
-    margin-bottom: 16px;
+    margin-bottom: 21px;
 }
 
 .bloco:last-child {
@@ -209,95 +252,118 @@
 .tituloCard {
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-bottom: 7px;
+    gap: 8px;
+    margin-bottom: 10px;
     color: var(--cor-destaque);
 }
 
 .tituloCard svg {
-    width: 10px;
-    height: 10px;
+    width: 16px;
+    height: 16px;
 }
 
 .tituloCard span {
-    font-size: 6px;
+    font-size: 10px;
     font-weight: 800;
-    letter-spacing: .5px;
+    letter-spacing: .6px;
 }
 
 .bloco > p {
-    margin-left: 16px;
+    margin-left: 24px;
     color: var(--cor-texto-categorizante);
-    font-size: 6px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.7;
 }
+
+/* =========================
+   HORÁRIOS
+========================= */
+
+/* =========================
+   HORÁRIOS
+========================= */
 
 .horarios {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    margin-left: 16px;
+    gap: 12px;
+    margin-left: 24px;
 }
 
 .horarios p {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    align-items: center;
+    gap: 18px;
     color: var(--cor-texto-categorizante);
-    font-size: 6px;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .horarios strong {
     color: var(--cor-texto);
-    font-size: 6px;
+    font-size: 13px;
     font-weight: 600;
+    text-align: right;
 }
 
 .horarios .fechado {
     color: var(--cor-destaque);
+    font-size: 13px;
 }
+
+/* =========================
+   TELEFONE
+========================= */
 
 .telefone {
     width: 100%;
-    height: 32px;
-    padding: 0 10px;
+    height: 42px;
+    padding: 0 12px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    border-radius: 6px;
+    justify-content: center;
+    gap: 9px;
+    border-radius: 7px;
     background-color: var(--cor-card-3);
     color: var(--cor-texto);
 }
 
 .telefone svg {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
 }
 
 .telefone span {
-    font-size: 7px;
+    font-size: 12px;
+    font-weight: 600;
 }
+
+/* =========================
+   BOTÃO LATERAL
+========================= */
 
 .botaoAgendarGrande {
     width: 100%;
-    height: 40px;
-    margin-top: 12px;
+    height: 48px;
+    margin-top: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    border-radius: 8px;
+    gap: 8px;
+    border: none;
+    border-radius: 9px;
     background-color: var(--cor-destaque);
     color: var(--cor-texto);
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .botaoAgendarGrande svg {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
 }
 
 .botaoAgendarGrande:hover {

@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fi';
 import CardServico from '../../components/CardServico/CardServico';
 import styles from './Estabelecimento.module.css';
+import CarrosselImagens from "../../components/CarrosselImagens/CarrosselImagens.jsx";
 
 export default function Estabelecimento() {
     const [categoria, setCategoria] = useState('Serviços');
@@ -57,6 +58,13 @@ export default function Estabelecimento() {
         }
     ];
 
+    const imagensBarbearia = [
+        '/sirAlfredpDentro.png',
+        '/sirAlfredpDentro1.webp',
+        '/sirAlfredpDentro2.webp',
+        '/sirAlfredpDentro3.png'
+    ];
+
     return (
         <main className={styles.container}>
             <section className={styles.conteudo}>
@@ -84,10 +92,7 @@ export default function Estabelecimento() {
                     </div>
 
                     <div className={styles.imagemContainer}>
-                        <img
-                            src="/imagens/barbearia.jpg"
-                            alt="Interior da barbearia Sir Alfred"
-                        />
+                        <CarrosselImagens imagens={imagensBarbearia} />
                     </div>
                 </div>
 

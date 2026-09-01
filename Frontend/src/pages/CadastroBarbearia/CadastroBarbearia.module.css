@@ -1,0 +1,250 @@
+.paginaCompleta {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cor-fundo-b);
+}
+
+/* HEADER */
+.header {
+    height: 60px;
+    background-color: var(--cor-fundo);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.logoHeader {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--cor-texto);
+    letter-spacing: -0.5px;
+}
+
+.areaUsuarioHeader {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btnSair {
+    background-color: var(--cor-confirmar);
+    color: var(--cor-texto-2);
+    border-radius: 20px;
+    padding: 6px 24px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.iconeAvatar {
+    width: 32px;
+    height: 32px;
+    background-color: #d1d5db;
+    border-radius: 50%;
+}
+
+/* CORPO 50/50 */
+.containerConteudo {
+    flex: 1;
+    display: flex;
+    width: 100%;
+}
+
+.areaFormulario {
+    flex: 1;
+    background-color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.cartaoCadastro {
+    background-color: var(--cor-fundo);
+    width: 100%;
+    max-width: 440px;
+    border-radius: 24px;
+    padding: 35px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.titulo {
+    font-size: 22px;
+    font-weight: 900;
+    font-style: italic;
+    color: var(--cor-texto);
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+.formulario {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.grupoEntrada {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+.rotulo {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--cor-texto);
+    margin-bottom: 2px;
+}
+
+.entrada {
+    border: none;
+    border-bottom: 1.5px solid #a1a1aa;
+    background: transparent;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--cor-texto);
+    outline: none;
+}
+
+/* RADIO BUTTONS */
+.grupoTipoUsuario {
+    display: flex;
+    justify-content: space-between;
+    margin: 18px 0;
+}
+
+.opcaoRadio {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.opcaoRadio span {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--cor-texto);
+}
+
+.opcaoRadio input[type="radio"] {
+    accent-color: var(--cor-confirmar);
+    cursor: pointer;
+}
+
+/* BOTÕES PILL */
+.btnCadastreSe {
+    background-color: var(--cor-confirmar);
+    color: var(--cor-texto-2);
+    border-radius: 20px;
+    padding: 10px;
+    font-weight: 800;
+    font-size: 12px;
+    width: 160px;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.textoOu {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--cor-texto);
+    margin: 10px 0;
+}
+
+.btnVoltar {
+    width: 220px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: var(--cor-botao-2);
+    color: var(--cor-texto);
+    border: 1.5px solid var(--cor-confirmar);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* AREA IMAGEM */
+.areaImagem {
+    flex: 1;
+    background-image: url('/public/cadastro.png');
+    background-size: cover;
+    background-position: center;
+}
+
+/* FOOTER */
+.footer {
+    background-color: var(--cor-fundo-b);
+    color: var(--cor-texto-2);
+    padding: 40px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-top: 1px solid #27272a;
+}
+
+.logoFooter {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.sloganFooter {
+    font-size: 11px;
+    color: #a1a1aa;
+    line-height: 1.4;
+}
+
+.sloganFooter span {
+    color: var(--cor-destaque);
+}
+
+.colunaLinks h4 {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.colunaLinks ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.colunaLinks li {
+    font-size: 11px;
+    color: #a1a1aa;
+    cursor: pointer;
+}
+
+.redesSociais {
+    display: flex;
+    gap: 12px;
+}
+
+.iconeRede {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+
+/* RESPONSIVO */
+@media (max-width: 850px) {
+    .areaImagem {
+        display: none;
+    }
+
+    .footer {
+        flex-direction: column;
+        gap: 24px;
+        padding: 30px;
+    }
+}

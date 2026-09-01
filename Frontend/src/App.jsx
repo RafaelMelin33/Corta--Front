@@ -10,8 +10,10 @@ import RedefinirSenha from './pages/RedefinacaoSenha/RedefinacaoSenha';
 import EditarUsuario from './pages/EditarUsuario/EditarUsuario';
 import VerificarCodigo from './pages/VerificarCodigo/VerificarCodigo';
 import Estabelecimento from './pages/Estabelecimento/Estabelecimento';
+import CadastroBarbearia from './pages/CadastroBarbearia/CadastroBarbearia.jsx';
 import BarbeariasDisponiveis from './pages/BarbeariasDisponiveis/BarbeariasDisponiveis';
 import Erro from "./pages/Erro/Erro";
+import PersonalizacaoBarbearia from "./pages/PersonalizacaoBarbearia/PersonalizacaoBarbearia.jsx";
 
 export default function App() {
     return (
@@ -62,6 +64,18 @@ export default function App() {
                     path="/barbearias-disponiveis"
                     element={<BarbeariasDisponiveis />}
                 />
+
+                <Route
+                    path="/cadastrobarbearia"
+                    element={<CadastroBarbearia />}
+                />
+
+                <Route
+                    path="/personalizacaobarbearia"
+                    element={<PersonalizacaoBarbearia />}
+                />
+
+
             </Routes>
 
             <Footer />

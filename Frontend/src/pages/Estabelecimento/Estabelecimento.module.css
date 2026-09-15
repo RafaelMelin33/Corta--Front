@@ -260,6 +260,9 @@
 
 .bloco {
     margin-bottom: 21px;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
 }
 
 .bloco:last-child {

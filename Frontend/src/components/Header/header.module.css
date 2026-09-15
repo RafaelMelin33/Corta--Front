@@ -192,6 +192,8 @@
     font-weight: bolder;
 
     transition: color 0.25s ease;
+
+    background-color: #ffffff;
 }
 
 .historico::after {

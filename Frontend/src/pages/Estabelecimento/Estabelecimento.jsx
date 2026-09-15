@@ -22,6 +22,7 @@ export default function Estabelecimento() {
     const [dados, setDados] = useState(null);
     const [servicos, setServicos] = useState([]);
     const [erro, setErro] = useState('');
+    const [profissionalSelecionado, setProfissionalSelecionado] = useState(null);
 
     useEffect(() => {
         async function carregar() {
@@ -47,6 +48,16 @@ export default function Estabelecimento() {
     const nomeBarbearia = dados.nome_barbearia || usuario.nome || 'Sua Barbearia';
     const formatarPreco = (preco) => Number(preco || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const formatarDuracao = (duracao) => `${duracao} MIN`;
+    const servicosDoProfissional = profissionalSelecionado
+        ? servicos.filter((servico) =>
+            profissionalSelecionado.servicos?.includes(servico.id_servico)
+        )
+        : [];
+    const diasDoProfissional = profissionalSelecionado
+        ? (dados.dias_servico || []).filter((dia) =>
+            profissionalSelecionado.dias?.includes(dia.id_dia)
+        )
+        : [];
     const telefoneWhatsApp = String(personalizacao.contato_telefone || '').replace(/\D/g, '');
     const instagram = String(personalizacao.instagram || '').replace(/^@/, '');
 
@@ -135,9 +146,11 @@ export default function Estabelecimento() {
                         {categoria === 'Profissionais' && (
                             <div className={styles.listaProfissionais}>
                                 {profissionais.map((profissional) => (
-                                    <div
+                                    <button
+                                        type="button"
                                         className={styles.profissional}
                                         key={profissional.id_funcionario}
+                                        onClick={() => setProfissionalSelecionado(profissional)}
                                     >
                                         <div className={styles.iconeProfissional}>
                                             <FiUser />
@@ -149,7 +162,7 @@ export default function Estabelecimento() {
                                                 {profissional.descricao || 'Barbeiro'}
                                             </span>
                                         </div>
-                                    </div>
+                                    </button>
                                 ))}
                             </div>
                         )}
@@ -201,6 +214,74 @@ export default function Estabelecimento() {
                     </aside>
                 </div>
             </section>
+
+            {profissionalSelecionado && (
+                <div
+                    className={styles.modalFundo}
+                    onClick={() => setProfissionalSelecionado(null)}
+                >
+                    <div
+                        className={styles.modal}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            className={styles.fecharModal}
+                            onClick={() => setProfissionalSelecionado(null)}
+                        >
+                            ×
+                        </button>
+
+                        <div className={styles.modalIcone}>
+                            <FiUser />
+                        </div>
+
+                        <h2>{profissionalSelecionado.nome}</h2>
+                        <p className={styles.modalDescricao}>
+                            {profissionalSelecionado.descricao || 'Profissional da barbearia'}
+                        </p>
+
+                        <div className={styles.modalBloco}>
+                            <h3>Serviços</h3>
+                            {servicosDoProfissional.length ? (
+                                <div className={styles.modalLista}>
+                                    {servicosDoProfissional.map((servico) => (
+                                        <div className={styles.modalItem} key={servico.id_servico}>
+                                            <span>{servico.nome}</span>
+                                            <strong>{formatarPreco(servico.preco)}</strong>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>Nenhum serviço informado.</p>
+                            )}
+                        </div>
+
+                        <div className={styles.modalBloco}>
+                            <h3>Atendimento</h3>
+                            {diasDoProfissional.length ? (
+                                <div className={styles.modalLista}>
+                                    {diasDoProfissional.map((dia) => (
+                                        <div className={styles.modalItem} key={dia.id_dia}>
+                                            <span>{dia.dia}</span>
+                                            <strong>
+                                                {dia.entrada_manha && dia.saida_manha
+                                                    ? `${String(dia.entrada_manha).slice(0, 5)} - ${String(dia.saida_manha).slice(0, 5)}`
+                                                    : 'Horário não informado'}
+                                                {dia.entrada_tarde && dia.saida_tarde
+                                                    ? ` | ${String(dia.entrada_tarde).slice(0, 5)} - ${String(dia.saida_tarde).slice(0, 5)}`
+                                                    : ''}
+                                            </strong>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>Nenhum horário informado.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

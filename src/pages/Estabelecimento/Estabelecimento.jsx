@@ -1,0 +1,206 @@
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import {
+    FiMapPin,
+    FiClock,
+    FiPhone,
+    FiMail,
+    FiInstagram,
+    FiCalendar,
+    FiUser
+} from 'react-icons/fi';
+import CardServico from '../../components/CardServico/CardServico';
+import styles from './Estabelecimento.module.css';
+import CarrosselImagens from "../../components/CarrosselImagens/CarrosselImagens.jsx";
+import { API_URL, apiFetch, mensagemDaApi } from '../../services/api';
+
+export default function Estabelecimento() {
+    const [searchParams] = useSearchParams();
+    const idUsuarioAlvo = searchParams.get('usuario');
+    const sufixoUsuario = idUsuarioAlvo ? `?id_usuario=${encodeURIComponent(idUsuarioAlvo)}` : '';
+    const [categoria, setCategoria] = useState('Serviços');
+    const [dados, setDados] = useState(null);
+    const [servicos, setServicos] = useState([]);
+    const [erro, setErro] = useState('');
+
+    useEffect(() => {
+        async function carregar() {
+            try {
+                const [personalizacao, servicosDaApi] = await Promise.all([
+                    apiFetch(`/barbearia/personalizacao${sufixoUsuario}`), apiFetch(`/barbearia/servicos${sufixoUsuario}`),
+                ]);
+                setDados(personalizacao);
+                setServicos(servicosDaApi.servicos || []);
+            } catch (error) { setErro(mensagemDaApi(error)); }
+        }
+        carregar();
+    }, [sufixoUsuario]);
+
+    if (erro) return <main className={styles.container}><p>{erro}</p></main>;
+    if (!dados) return <main className={styles.container}><p>Carregando estabelecimento…</p></main>;
+    if (!dados.personalizado) return <main className={styles.container}><p>Esta barbearia ainda não foi personalizada.</p></main>;
+
+    const personalizacao = dados.personalizacao;
+    const profissionais = dados.funcionarios || [];
+    const imagensBarbearia = (dados.fotos || []).map((foto) => `${API_URL}${foto.url}`);
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nomeBarbearia = dados.nome_barbearia || usuario.nome || 'Sua Barbearia';
+    const formatarPreco = (preco) => Number(preco || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const formatarDuracao = (duracao) => `${duracao} MIN`;
+    const telefoneWhatsApp = String(personalizacao.contato_telefone || '').replace(/\D/g, '');
+    const instagram = String(personalizacao.instagram || '').replace(/^@/, '');
+
+    return (
+        <main className={styles.container} style={{
+            '--cor-destaque': personalizacao.cor_primaria || '#FF9C08',
+            '--cor-fundo': personalizacao.cor_terciaria || '#FFFFFF',
+            '--cor-fundo-b': personalizacao.cor_secundaria || '#000000',
+            '--cor-texto': personalizacao.cor_texto_primario || '#000000',
+            '--cor-texto-2': personalizacao.cor_texto_secundario || '#FFFFFF',
+        }}>
+            <section className={styles.conteudo}>
+                <div className={styles.apresentacao}>
+                    <div className={styles.informacoes}>
+                        <span className={styles.selo}>
+                            PREMIUM EXPERIENCE
+                        </span>
+
+                        <h1>{nomeBarbearia}</h1>
+
+                        <p>
+                            {personalizacao.historia || 'Conheça nossa barbearia e nossos serviços.'}
+                        </p>
+
+                        <button
+                            id="btn-agendar-topo"
+                            className={styles.botaoAgendar}
+                        >
+                            Agendar Agora
+                        </button>
+                    </div>
+
+                    <div className={styles.imagemContainer}>
+                        {imagensBarbearia.length ? <CarrosselImagens imagens={imagensBarbearia} /> : <div />}
+                    </div>
+                </div>
+
+                <div className={styles.areaPrincipal}>
+                    <section className={styles.servicos}>
+                        <div className={styles.tituloSecao}>
+                            <span></span>
+                            <h2>Nossos Serviços</h2>
+                        </div>
+
+                        <div className={styles.abas}>
+                            <button
+                                id="btn-aba-servicos"
+                                className={
+                                    categoria === 'Serviços'
+                                        ? styles.abaAtiva
+                                        : ''
+                                }
+                                onClick={() => setCategoria('Serviços')}
+                            >
+                                Serviços
+                            </button>
+
+                            <button
+                                id="btn-aba-profissionais"
+                                className={
+                                    categoria === 'Profissionais'
+                                        ? styles.abaAtiva
+                                        : ''
+                                }
+                                onClick={() =>
+                                    setCategoria('Profissionais')
+                                }
+                            >
+                                Profissionais
+                            </button>
+                        </div>
+
+                        {categoria === 'Serviços' && (
+                            <div className={styles.listaServicos}>
+                                {servicos.map((servico) => (
+                                    <CardServico
+                                        key={servico.id_servico}
+                                        nome={servico.nome}
+                                        tempo={formatarDuracao(servico.duracao)}
+                                        preco={formatarPreco(servico.preco)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
+                        {categoria === 'Profissionais' && (
+                            <div className={styles.listaProfissionais}>
+                                {profissionais.map((profissional) => (
+                                    <div
+                                        className={styles.profissional}
+                                        key={profissional.id_funcionario}
+                                    >
+                                        <div className={styles.iconeProfissional}>
+                                            <FiUser />
+                                        </div>
+
+                                        <div>
+                                            <h3>{profissional.nome}</h3>
+                                            <span>
+                                                {profissional.descricao || 'Barbeiro'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </section>
+
+                    <aside className={styles.lateral}>
+                        <div className={styles.cardInformacoes}>
+                            <div className={styles.bloco}>
+                                <div className={styles.tituloCard}>
+                                    <FiMapPin />
+                                    <span>LOCALIZAÇÃO</span>
+                                </div>
+
+                                <p>
+                                    {personalizacao.localizacao || 'Localização não informada'}
+                                </p>
+                            </div>
+
+                            <div className={styles.bloco}>
+                                <div className={styles.tituloCard}>
+                                    <FiClock />
+                                    <span>
+                                        HORÁRIO DE ATENDIMENTO
+                                    </span>
+                                </div>
+
+                                <div className={styles.horarios}>{(dados.dias_servico || []).map((dia) => <p key={dia.id_dia}><span>{dia.dia}</span><strong>{String(dia.entrada_manha).slice(0, 5)} - {String(dia.saida_manha).slice(0, 5)} | {String(dia.entrada_tarde).slice(0, 5)} - {String(dia.saida_tarde).slice(0, 5)}</strong></p>)}</div>
+                            </div>
+
+                            <div className={styles.bloco}>
+                                <div className={styles.tituloCard}>
+                                    <FiPhone />
+                                    <span>CONTATO</span>
+                                </div>
+
+                                {telefoneWhatsApp ? <a className={styles.telefone} href={`https://wa.me/55${telefoneWhatsApp}`} target="_blank" rel="noreferrer"><FiPhone /><span>{personalizacao.contato_telefone}</span></a> : <div className={styles.telefone}><FiPhone /><span>Telefone não informado</span></div>}
+                                {personalizacao.contato_email && <a className={styles.telefone} href={`mailto:${personalizacao.contato_email}`}><FiMail /><span>{personalizacao.contato_email}</span></a>}
+                                {instagram && <a className={styles.telefone} href={`https://instagram.com/${instagram}`} target="_blank" rel="noreferrer"><FiInstagram /><span>{personalizacao.instagram}</span></a>}
+                            </div>
+                        </div>
+
+                        <button
+                            id="btn-agendar-lateral"
+                            className={styles.botaoAgendarGrande}
+                        >
+                            <FiCalendar />
+                            AGENDAR AGORA
+                        </button>
+                    </aside>
+                </div>
+            </section>
+        </main>
+    );
+}

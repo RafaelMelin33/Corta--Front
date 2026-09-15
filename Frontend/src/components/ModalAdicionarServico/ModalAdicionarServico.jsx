@@ -110,7 +110,7 @@ export default function ModalAdicionarServico({ open, onClose, onAdd }) {
                     Personalize os detalhes para seus clientes.
                 </div>
 
-                <button type="submit" className={styles.botaoPrimario} disabled={!podeAdicionar}>
+                <button type="submit" className={styles.botaoPrimario} disabled={""}>
                     <Plus size={16} /> ADICIONAR
                 </button>
                 <button type="button" className={styles.botaoCancelar} onClick={onClose}>

@@ -82,10 +82,25 @@ export default function PersonalizacaoBarbearia({ modoEdicao = false }) {
     const alternarDiaFuncionario = (indice, chaveDia) => setFuncionarios((lista) => lista.map((funcionario, i) => i === indice ? { ...funcionario, dias: funcionario.dias.includes(chaveDia) ? funcionario.dias.filter((dia) => dia !== chaveDia) : [...funcionario.dias, chaveDia] } : funcionario));
 
     async function adicionarServico(servico) {
-        const resposta = await apiFetch(`/barbearia/servicos${sufixoUsuario}`, { method: 'POST', body: JSON.stringify(servico) });
-        setServicos((lista) => [...lista, resposta.servico]);
-        setModalAberto(false);
-        setMensagem(resposta.mensagem);
+        try {
+            const resposta = await apiFetch(
+                `/barbearia/servicos${sufixoUsuario}`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify(servico)
+                }
+            );
+
+            setServicos((lista) => [...lista, resposta.servico]);
+            setModalAberto(false);
+            setMensagem(resposta.mensagem);
+
+        } catch (erro) {
+            setMensagem({
+                informacao: mensagemDaApi(erro),
+                tipo: 'erro'
+            });
+        }
     }
 
     async function removerServico(servico) {

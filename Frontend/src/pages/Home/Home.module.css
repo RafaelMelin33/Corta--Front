@@ -46,7 +46,7 @@
     max-width: 1050px;
     padding: 0 20px;
     position: absolute;
-    bottom: -60px; /* Faz flutuar sobre a transição da página */
+    bottom: -130px; /* Faz flutuar sobre a transição da página */
 }
 
 .card {

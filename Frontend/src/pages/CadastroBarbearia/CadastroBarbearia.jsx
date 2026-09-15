@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IMaskInput } from 'react-imask';
 import { apiFetch, mensagemDaApi } from '../../services/api';
 import MensagemCard from '../../components/MensagemCard/MensagemCard';
@@ -16,6 +16,8 @@ export default function CadastroADM() {
     const [mensagem, setMensagem] = useState(null);
 
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const cadastroPorAdmin = searchParams.get('origem') === 'admin';
 
     const obterTipoNumeric = (tipo) => {
         switch (tipo) {
@@ -49,10 +51,15 @@ export default function CadastroADM() {
                 }),
             });
 
-            localStorage.setItem('email_verificacao', email.trim().replace(/\s/g, ''));
             setMensagem(dados?.mensagem || { informacao: 'Cadastro realizado com sucesso!', tipo: 'sucesso' });
 
             setTimeout(() => {
+                // Cadastro iniciado pelo painel não deve tirar o ADM da gestão.
+                if (cadastroPorAdmin) {
+                    navigate('/admin/usuarios', { replace: true });
+                    return;
+                }
+                localStorage.setItem('email_verificacao', email.trim().replace(/\s/g, ''));
                 navigate('/verificar-codigo');
             }, 1000);
         } catch (error) {

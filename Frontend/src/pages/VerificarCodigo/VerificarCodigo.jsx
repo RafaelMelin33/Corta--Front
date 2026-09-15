@@ -1,21 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IMaskInput } from 'react-imask';
 import { useNavigate } from 'react-router-dom';
 import styles from './VerificarCodigo.module.css';
 import { apiFetch, mensagemDaApi } from '../../services/api';
 
 export default function VerificarCodigo() {
-    const [email, setEmail] = useState('');
+    // O e-mail é definido antes da primeira renderização; não é necessário
+    // disparar outro ciclo de renderização apenas para ler o armazenamento local.
+    const [email] = useState(() => localStorage.getItem('email_verificacao') || '');
     const [codigo, setCodigo] = useState('');
     const [erro, setErro] = useState('');
     const [sucesso, setSucesso] = useState('');
     const [carregando, setCarregando] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const emailSalvo = localStorage.getItem('email_verificacao') || '';
-        setEmail(emailSalvo);
-    }, []);
 
     const verificar = async (e) => {
         e.preventDefault();

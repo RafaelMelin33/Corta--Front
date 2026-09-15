@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { X, Plus, Scissors } from "lucide-react";
 import styles from "./ModalAdicionarServico.module.css";
 
-const DURACOES = ["15 min", "30 min", "45 min", "1 h", "1 h 30", "2 h"];
+const DURACOES = [
+    { label: "15 min", value: 15 }, { label: "30 min", value: 30 },
+    { label: "45 min", value: 45 }, { label: "1 h", value: 60 },
+    { label: "1 h 30", value: 90 }, { label: "2 h", value: 120 },
+];
 
 /**
  * Modal para cadastro de um novo serviço.
@@ -14,26 +18,30 @@ const DURACOES = ["15 min", "30 min", "45 min", "1 h", "1 h 30", "2 h"];
 export default function ModalAdicionarServico({ open, onClose, onAdd }) {
     const [nome, setNome] = useState("");
     const [preco, setPreco] = useState("");
-    const [duracao, setDuracao] = useState("30 min");
+    const [duracao, setDuracao] = useState(30);
     const [descricao, setDescricao] = useState("");
 
     if (!open) return null;
 
-    const podeAdicionar = nome.trim().length > 0;
+    const podeAdicionar = nome.trim().length > 0 && Number(preco.replace(',', '.')) >= 0;
 
-    const handleAdd = () => {
+    const handleAdd = async () => {
         if (!podeAdicionar) return;
-        onAdd({ nome: nome.trim(), preco, duracao, descricao });
+        try {
+            await onAdd({ nome: nome.trim(), preco, duracao, descricao: descricao.trim() });
+        } catch {
+            return;
+        }
         setNome("");
         setPreco("");
-        setDuracao("30 min");
+        setDuracao(30);
         setDescricao("");
     };
 
     return (
         <div role="dialog" aria-modal="true" className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <button className={styles.fechar} onClick={onClose} aria-label="Fechar">
+            <form className={styles.modal} onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); handleAdd(); }}>
+                <button type="button" className={styles.fechar} onClick={onClose} aria-label="Fechar">
                     <X size={20} />
                 </button>
 
@@ -62,7 +70,8 @@ export default function ModalAdicionarServico({ open, onClose, onAdd }) {
                             placeholder="00,00"
                             inputMode="decimal"
                             value={preco}
-                            onChange={(e) => setPreco(e.target.value)}
+                    onChange={(e) => setPreco(e.target.value.replace(/[^0-9,.]/g, ''))}
+                    required
                         />
                     </div>
                     <div>
@@ -76,8 +85,8 @@ export default function ModalAdicionarServico({ open, onClose, onAdd }) {
                             onChange={(e) => setDuracao(e.target.value)}
                         >
                             {DURACOES.map((d) => (
-                                <option key={d} value={d}>
-                                    {d}
+                                <option key={d.value} value={d.value}>
+                                    {d.label}
                                 </option>
                             ))}
                         </select>
@@ -101,13 +110,13 @@ export default function ModalAdicionarServico({ open, onClose, onAdd }) {
                     Personalize os detalhes para seus clientes.
                 </div>
 
-                <button className={styles.botaoPrimario} onClick={handleAdd} disabled={!podeAdicionar}>
+                <button type="submit" className={styles.botaoPrimario} disabled={!podeAdicionar}>
                     <Plus size={16} /> ADICIONAR
                 </button>
-                <button className={styles.botaoCancelar} onClick={onClose}>
+                <button type="button" className={styles.botaoCancelar} onClick={onClose}>
                     CANCELAR
                 </button>
-            </div>
+            </form>
         </div>
     );
 }

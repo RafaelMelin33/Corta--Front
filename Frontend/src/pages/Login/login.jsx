@@ -145,29 +145,27 @@ export default function Login() {
             );
 
 
-            // ==========================================
-            // ID DO USUÁRIO
-            // ==========================================
+            const tipo = Number(usuario.tipo);
+            let destino = '/barbearias-disponiveis';
 
-            const idUsuario =
-                dados.usuario.id_usuario ??
-                dados.usuario.id;
-
-
-            // ==========================================
-            // IR PARA EDITAR USUÁRIO
-            // ==========================================
-
-            if (idUsuario) {
-
-                setTimeout(() => {
-
-                    navigate(
-                        '/editarusuario'
-                    );
-
-                }, 800);
+            // A barbearia precisa configurar sua vitrine somente uma vez.
+            if (tipo === 2) {
+                try {
+                    const personalizacao = await apiFetch('/barbearia/personalizacao');
+                    destino = personalizacao.personalizado
+                        ? '/estabelecimento'
+                        : '/personalizacaobarbearia';
+                } catch (erroPersonalizacao) {
+                    // Se existir uma inconsistência de personalização, a
+                    // barbearia ainda consegue abrir a tela para corrigir.
+                    console.warn('Personalização indisponível:', erroPersonalizacao);
+                    destino = '/personalizacaobarbearia';
+                }
+            } else if (tipo === 0) {
+                destino = '/admin/usuarios';
             }
+
+            setTimeout(() => navigate(destino), 800);
 
 
         } catch (error) {

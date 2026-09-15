@@ -56,3 +56,10 @@
     font-size: 12px;
     font-weight: 700;
 }
+
+@media (max-width: 360px) {
+    .card { align-items: flex-start; gap: 10px; }
+    .card strong { margin-left: 0; padding-top: 4px; }
+    .informacoes { min-width: 0; }
+    .informacoes h3, .informacoes span { overflow-wrap: anywhere; }
+}

@@ -1,72 +1,63 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
     FiMapPin,
     FiClock,
     FiPhone,
+    FiMail,
+    FiInstagram,
     FiCalendar,
     FiUser
 } from 'react-icons/fi';
 import CardServico from '../../components/CardServico/CardServico';
 import styles from './Estabelecimento.module.css';
 import CarrosselImagens from "../../components/CarrosselImagens/CarrosselImagens.jsx";
+import { API_URL, apiFetch, mensagemDaApi } from '../../services/api';
 
 export default function Estabelecimento() {
+    const [searchParams] = useSearchParams();
+    const idUsuarioAlvo = searchParams.get('usuario');
+    const sufixoUsuario = idUsuarioAlvo ? `?id_usuario=${encodeURIComponent(idUsuarioAlvo)}` : '';
     const [categoria, setCategoria] = useState('Serviços');
+    const [dados, setDados] = useState(null);
+    const [servicos, setServicos] = useState([]);
+    const [erro, setErro] = useState('');
 
-    const [servicos] = useState([
-        {
-            id_servico: 1,
-            nome: 'ACABAMENTO',
-            tempo: '15 MIN',
-            preco: 'R$ 25,00'
-        },
-        {
-            id_servico: 2,
-            nome: 'BARBA',
-            tempo: '30 MIN',
-            preco: 'R$ 48,00'
-        },
-        {
-            id_servico: 3,
-            nome: 'COMBO COMPLETO',
-            tempo: '1 HORA',
-            preco: 'R$ 95,00'
-        },
-        {
-            id_servico: 4,
-            nome: 'CORTE EXECUTIVO',
-            tempo: '30 MIN',
-            preco: 'R$ 58,00'
+    useEffect(() => {
+        async function carregar() {
+            try {
+                const [personalizacao, servicosDaApi] = await Promise.all([
+                    apiFetch(`/barbearia/personalizacao${sufixoUsuario}`), apiFetch(`/barbearia/servicos${sufixoUsuario}`),
+                ]);
+                setDados(personalizacao);
+                setServicos(servicosDaApi.servicos || []);
+            } catch (error) { setErro(mensagemDaApi(error)); }
         }
-    ]);
+        carregar();
+    }, [sufixoUsuario]);
 
-    const profissionais = [
-        {
-            id: 1,
-            nome: 'Carlos',
-            especialidade: 'Barbeiro'
-        },
-        {
-            id: 2,
-            nome: 'João',
-            especialidade: 'Barbeiro'
-        },
-        {
-            id: 3,
-            nome: 'Lucas',
-            especialidade: 'Barbeiro'
-        }
-    ];
+    if (erro) return <main className={styles.container}><p>{erro}</p></main>;
+    if (!dados) return <main className={styles.container}><p>Carregando estabelecimento…</p></main>;
+    if (!dados.personalizado) return <main className={styles.container}><p>Esta barbearia ainda não foi personalizada.</p></main>;
 
-    const imagensBarbearia = [
-        '/sirAlfredpDentro.png',
-        '/sirAlfredpDentro1.webp',
-        '/sirAlfredpDentro2.webp',
-        '/sirAlfredpDentro3.png'
-    ];
+    const personalizacao = dados.personalizacao;
+    const profissionais = dados.funcionarios || [];
+    const imagensBarbearia = (dados.fotos || []).map((foto) => `${API_URL}${foto.url}`);
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const nomeBarbearia = dados.nome_barbearia || usuario.nome || 'Sua Barbearia';
+    const formatarPreco = (preco) => Number(preco || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const formatarDuracao = (duracao) => `${duracao} MIN`;
+    const telefoneWhatsApp = String(personalizacao.contato_telefone || '').replace(/\D/g, '');
+    const instagram = String(personalizacao.instagram || '').replace(/^@/, '');
 
     return (
-        <main className={styles.container}>
+        <main className={styles.container} style={{
+            '--cor-destaque': personalizacao.cor_primaria || '#FF9C08',
+            '--cor-fundo': personalizacao.cor_terciaria || '#FFFFFF',
+            '--cor-fundo-b': personalizacao.cor_secundaria || '#000000',
+            '--cor-texto': personalizacao.cor_texto_primario || '#000000',
+            '--cor-texto-2': personalizacao.cor_texto_secundario || '#FFFFFF',
+        }}>
             <section className={styles.conteudo}>
                 <div className={styles.apresentacao}>
                     <div className={styles.informacoes}>
@@ -74,13 +65,10 @@ export default function Estabelecimento() {
                             PREMIUM EXPERIENCE
                         </span>
 
-                        <h1>Sir Alfred</h1>
+                        <h1>{nomeBarbearia}</h1>
 
                         <p>
-                            Desde 2020, elevando a autoestima e proporcionando
-                            experiências excepcionais. Um novo conceito em
-                            barbearia, focado em detalhes e no bem-estar de
-                            nossos clientes.
+                            {personalizacao.historia || 'Conheça nossa barbearia e nossos serviços.'}
                         </p>
 
                         <button
@@ -92,7 +80,7 @@ export default function Estabelecimento() {
                     </div>
 
                     <div className={styles.imagemContainer}>
-                        <CarrosselImagens imagens={imagensBarbearia} />
+                        {imagensBarbearia.length ? <CarrosselImagens imagens={imagensBarbearia} /> : <div />}
                     </div>
                 </div>
 
@@ -137,8 +125,8 @@ export default function Estabelecimento() {
                                     <CardServico
                                         key={servico.id_servico}
                                         nome={servico.nome}
-                                        tempo={servico.tempo}
-                                        preco={servico.preco}
+                                        tempo={formatarDuracao(servico.duracao)}
+                                        preco={formatarPreco(servico.preco)}
                                     />
                                 ))}
                             </div>
@@ -149,7 +137,7 @@ export default function Estabelecimento() {
                                 {profissionais.map((profissional) => (
                                     <div
                                         className={styles.profissional}
-                                        key={profissional.id}
+                                        key={profissional.id_funcionario}
                                     >
                                         <div className={styles.iconeProfissional}>
                                             <FiUser />
@@ -158,7 +146,7 @@ export default function Estabelecimento() {
                                         <div>
                                             <h3>{profissional.nome}</h3>
                                             <span>
-                                                {profissional.especialidade}
+                                                {profissional.descricao || 'Barbeiro'}
                                             </span>
                                         </div>
                                     </div>
@@ -176,9 +164,7 @@ export default function Estabelecimento() {
                                 </div>
 
                                 <p>
-                                    Av. Maringá, 2450 - 86000-971
-                                    <br />
-                                    Centro - Londrina/PR
+                                    {personalizacao.localizacao || 'Localização não informada'}
                                 </p>
                             </div>
 
@@ -190,28 +176,7 @@ export default function Estabelecimento() {
                                     </span>
                                 </div>
 
-                                <div className={styles.horarios}>
-                                    <p>
-                                        <span>Terça a Sexta</span>
-                                        <strong>
-                                            08:00 - 12:00 | 14:00 - 20:00
-                                        </strong>
-                                    </p>
-
-                                    <p>
-                                        <span>Sábado</span>
-                                        <strong>
-                                            08:00 - 12:00 | 14:00 - 20:00
-                                        </strong>
-                                    </p>
-
-                                    <p>
-                                        <span>Domingo e Segunda</span>
-                                        <strong className={styles.fechado}>
-                                            Fechado
-                                        </strong>
-                                    </p>
-                                </div>
+                                <div className={styles.horarios}>{(dados.dias_servico || []).map((dia) => <p key={dia.id_dia}><span>{dia.dia}</span><strong>{String(dia.entrada_manha).slice(0, 5)} - {String(dia.saida_manha).slice(0, 5)} | {String(dia.entrada_tarde).slice(0, 5)} - {String(dia.saida_tarde).slice(0, 5)}</strong></p>)}</div>
                             </div>
 
                             <div className={styles.bloco}>
@@ -220,10 +185,9 @@ export default function Estabelecimento() {
                                     <span>CONTATO</span>
                                 </div>
 
-                                <div className={styles.telefone}>
-                                    <FiPhone />
-                                    <span>(18) 99789-9070</span>
-                                </div>
+                                {telefoneWhatsApp ? <a className={styles.telefone} href={`https://wa.me/55${telefoneWhatsApp}`} target="_blank" rel="noreferrer"><FiPhone /><span>{personalizacao.contato_telefone}</span></a> : <div className={styles.telefone}><FiPhone /><span>Telefone não informado</span></div>}
+                                {personalizacao.contato_email && <a className={styles.telefone} href={`mailto:${personalizacao.contato_email}`}><FiMail /><span>{personalizacao.contato_email}</span></a>}
+                                {instagram && <a className={styles.telefone} href={`https://instagram.com/${instagram}`} target="_blank" rel="noreferrer"><FiInstagram /><span>{personalizacao.instagram}</span></a>}
                             </div>
                         </div>
 

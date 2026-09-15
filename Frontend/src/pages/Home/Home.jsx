@@ -1,4 +1,3 @@
-import React from 'react';
 import { LuClock, LuScissors, LuSparkles } from 'react-icons/lu';
 import styles from './Home.module.css';
 

@@ -343,6 +343,15 @@
     color: var(--cor-texto);
 }
 
+.telefone[href] {
+    text-decoration: none;
+    transition: opacity .2s ease;
+}
+
+.telefone[href]:hover {
+    opacity: .72;
+}
+
 .telefone svg {
     width: 16px;
     height: 16px;

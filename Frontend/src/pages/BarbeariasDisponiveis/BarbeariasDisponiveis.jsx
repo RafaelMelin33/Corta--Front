@@ -1,54 +1,44 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LuSearch, LuMapPin, LuClock } from 'react-icons/lu';
 import { IMaskInput } from 'react-imask';
+import { useNavigate } from 'react-router-dom';
 import styles from './BarbeariasDisponiveis.module.css';
-const barbeariasData = [
-    {
-        id: 1,
-        nome: 'MV BarberShop',
-        endereco: 'Rua Aurora, Nº 308',
-        horario: '8:00 - 20:00',
-        dias: 'SEG - SAB',
-        imagem: '/mvcortes.png'
-    },
-    {
-        id: 2,
-        nome: 'Gordolas Barber',
-        endereco: 'Av. Euclides Miragaia, Nº 62B',
-        horario: '9:00 - 19:30',
-        dias: 'SEG - SEX',
-        imagem: '/gordollas.png',
-    },
-    {
-        id: 3,
-        nome: 'Sir Alfred',
-        endereco: 'Av. Nove de Julho, Nº 628',
-        horario: '8:00 - 20:00',
-        dias: 'SEG - SAB',
-        imagem: '/siralfred.png',
-    },
-    {
-        id: 4,
-        nome: 'El Brabo',
-        endereco: 'Rua Mantura Antônio, Nº 895',
-        horario: '8:30 - 20:00',
-        dias: 'SEG - SAB',
-        imagem: '/elbrabo.png',
-    },
-];
+import { apiFetch, API_URL } from '../../services/api';
 
 export default function Barbearias() {
+    const navigate = useNavigate();
     const [busca, setBusca] = useState('');
+    const [barbearias, setBarbearias] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState('');
 
-    const barbeariasFiltradas = barbeariasData.filter((barbearia) =>
+    useEffect(() => {
+        async function carregarBarbearias() {
+            try {
+                setCarregando(true);
+                setErro('');
+
+                const dados = await apiFetch('/barbearias-disponiveis');
+                setBarbearias(Array.isArray(dados) ? dados : []);
+            } catch (error) {
+                console.error('Erro ao carregar barbearias:', error);
+                setErro('Não foi possível carregar as barbearias disponíveis.');
+                setBarbearias([]);
+            } finally {
+                setCarregando(false);
+            }
+        }
+
+        carregarBarbearias();
+    }, []);
+
+    const barbeariasFiltradas = barbearias.filter((barbearia) =>
         barbearia.nome.toLowerCase().includes(busca.toLowerCase())
     );
 
     return (
         <div className={styles.container}>
-            {/* SEÇÃO PRINCIPAL */}
             <main className={styles.main}>
-                {/* CABEÇALHO DA BUSCA */}
                 <div className={styles.headerBusca}>
                     <div className={styles.titulos}>
                         <h1 className={styles.titulo}>
@@ -64,7 +54,7 @@ export default function Barbearias() {
                         <IMaskInput
                             mask={/^[\s\S]*$/}
                             type="text"
-                            placeholder="Ex: Gordolas Barber"
+                            placeholder="Ex: nome da barbearia"
                             value={busca}
                             onAccept={(value) => setBusca(value)}
                             className={styles.inputBusca}
@@ -72,36 +62,62 @@ export default function Barbearias() {
                     </div>
                 </div>
 
-                {/* GRID DE CARDS */}
-                <div className={styles.grid}>
-                    {barbeariasFiltradas.map((barbearia) => (
-                        <div
-                            key={barbearia.id}
-                            className={styles.card}
-                            style={{ backgroundImage: `url(${barbearia.imagem})` }}
-                        >
-                            <div className={styles.cardOverlay}>
-                                <span className={styles.badgeDias}>{barbearia.dias}</span>
+                {carregando && (
+                    <p>Carregando barbearias...</p>
+                )}
 
-                                <div className={styles.cardConteudo}>
-                                    <h3 className={styles.cardNome}>{barbearia.nome}</h3>
+                {!carregando && erro && (
+                    <p>{erro}</p>
+                )}
 
-                                    <div className={styles.infoLinha}>
-                                        <LuMapPin className={styles.infoIcone} size={14} />
-                                        <span>{barbearia.endereco}</span>
+                {!carregando && !erro && barbeariasFiltradas.length === 0 && (
+                    <p>Nenhuma barbearia personalizada encontrada.</p>
+                )}
+
+                {!carregando && !erro && barbeariasFiltradas.length > 0 && (
+                    <div className={styles.grid}>
+                        {barbeariasFiltradas.map((barbearia) => (
+                            <article
+                                key={barbearia.id}
+                                className={styles.card}
+                                style={
+                                    barbearia.imagem
+                                        ? { backgroundImage: `url(${API_URL}${barbearia.imagem})` }
+                                        : undefined
+                                }
+                            >
+                                <div className={styles.cardOverlay}>
+                                    <span className={styles.badgeDias}>{barbearia.dias}</span>
+
+                                    <div className={styles.cardConteudo}>
+                                        <h3 className={styles.cardNome}>{barbearia.nome}</h3>
+
+                                        <div className={styles.infoLinha}>
+                                            <LuMapPin className={styles.infoIcone} size={14} />
+                                            <span>{barbearia.endereco || 'Endereço não informado'}</span>
+                                        </div>
+
+                                        <div className={styles.infoLinha}>
+                                            <LuClock className={styles.infoIcone} size={14} />
+                                            <span>
+                                                Horário de Atendimento: {barbearia.horario || 'Não informado'}
+                                            </span>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            className={styles.btnAgendar}
+                                            disabled={!barbearia.personalizada}
+                                            onClick={() => navigate(`/estabelecimento?usuario=${barbearia.id}`)}
+                                        >
+                                            {barbearia.personalizada ? 'Ver estabelecimento' : 'Em configuração'}
+                                        </button>
                                     </div>
-
-                                    <div className={styles.infoLinha}>
-                                        <LuClock className={styles.infoIcone} size={14} />
-                                        <span>Horário de Atendimento: {barbearia.horario}</span>
-                                    </div>
-
-                                    <button className={styles.btnAgendar}>Agendar Horário</button>
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
             </main>
         </div>
     );

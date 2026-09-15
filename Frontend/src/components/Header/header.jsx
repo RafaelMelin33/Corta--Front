@@ -13,10 +13,10 @@ import {
 import {
     FiUser,
     FiMenu,
-    FiX
+    FiX,
+    FiArrowLeft
 } from "react-icons/fi";
-
-const API_URL = "http://localhost:5000";
+import { API_URL, apiFetch } from '../../services/api';
 
 export default function Header() {
 
@@ -29,6 +29,7 @@ export default function Header() {
     const [logado, setLogado] = useState(false);
     const [fotoPerfil, setFotoPerfil] = useState(null);
     const [nomeUsuario, setNomeUsuario] = useState("");
+    const [tipoUsuario, setTipoUsuario] = useState(null);
     const [menuAberto, setMenuAberto] = useState(false);
 
 
@@ -110,6 +111,7 @@ export default function Header() {
                 setLogado(false);
                 setFotoPerfil(null);
                 setNomeUsuario("");
+                setTipoUsuario(null);
 
                 return;
             }
@@ -129,6 +131,7 @@ export default function Header() {
                 setLogado(false);
                 setFotoPerfil(null);
                 setNomeUsuario("");
+                setTipoUsuario(null);
 
                 return;
             }
@@ -143,6 +146,11 @@ export default function Header() {
             setNomeUsuario(
                 usuario?.nome || ""
             );
+
+            // TIPO 2 = barbeiro/barbearia.
+            // Para esse usuário, o botão BARBEARIAS abre diretamente
+            // a página da própria barbearia.
+            setTipoUsuario(usuario?.tipo ?? null);
 
 
             // ==================================================
@@ -163,6 +171,18 @@ export default function Header() {
             } else {
 
                 setFotoPerfil(null);
+
+                // No login a foto não vem no payload. Buscamos o perfil
+                // autenticado para preencher o header sem depender de reload.
+                apiFetch(`/dados-perfil/${id}`)
+                    .then((dados) => {
+                        const foto = dados?.usuario?.foto_perfil;
+                        if (!foto) return;
+                        const atualizado = { ...usuario, ...dados.usuario, foto_perfil: foto };
+                        localStorage.setItem('usuario', JSON.stringify(atualizado));
+                        setFotoPerfil(obterUrlFoto(foto, true));
+                    })
+                    .catch(() => setFotoPerfil(null));
 
             }
 
@@ -189,7 +209,9 @@ export default function Header() {
 
     useEffect(() => {
 
-        verificarLogin();
+        // Agenda a leitura da sessão após a montagem para evitar atualizar
+        // estado durante a execução síncrona do efeito.
+        queueMicrotask(verificarLogin);
 
 
         // ==================================================
@@ -444,21 +466,24 @@ export default function Header() {
 
                         <>
 
-                            <Link
-                                to="/historico"
-                                className={estilo.historico}
-                                onClick={fecharMenu}
-                            >
-                                HISTÓRICO
-                            </Link>
+                            {/* Para o administrador, voltar sempre significa retornar ao painel de usuários.
+                                Não usamos navigate(-1), pois o histórico pode apontar para uma página pública. */}
+                            {Number(tipoUsuario) === 0 && <button type="button" className={estilo.historico} onClick={() => { fecharMenu(); navigate('/admin/usuarios'); }}><FiArrowLeft /> VOLTAR</button>}
 
-                            <Link
-                                to="/barbearias-disponiveis"
-                                className={estilo.historico}
-                                onClick={fecharMenu}
-                            >
-                                BARBEARIAS
-                            </Link>
+                            {Number(tipoUsuario) === 0 && <>
+                                <Link to="/admin/usuarios" className={estilo.historico} onClick={fecharMenu}>USUÁRIOS</Link>
+                                <Link to="/barbearias-disponiveis" className={estilo.historico} onClick={fecharMenu}>BARBEARIAS</Link>
+                            </>}
+
+                            {Number(tipoUsuario) === 1 && <>
+                                <Link to="/barbearias-disponiveis" className={estilo.historico} onClick={fecharMenu}>BARBEARIAS</Link>
+                                <Link to="/historico" className={estilo.historico} onClick={fecharMenu}>HISTÓRICO</Link>
+                            </>}
+
+                            {Number(tipoUsuario) === 2 && <>
+                                <Link to="/estabelecimento" className={estilo.historico} onClick={fecharMenu}>MINHA BARBEARIA</Link>
+                                <Link to="/editarbarbearia" className={estilo.historico} onClick={fecharMenu}>EDITAR BARBEARIA</Link>
+                            </>}
 
 
                             <button

@@ -7,7 +7,7 @@ import {
 } from 'react-icons/fi';
 
 import { IMaskInput } from 'react-imask';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import styles from './EditarUsuario.module.css';
 
@@ -25,6 +25,7 @@ const API_URL = 'http://localhost:5000';
 export default function EditarUsuario() {
 
     const navigate = useNavigate();
+    const { id: idDaRota } = useParams();
 
     // ==================================================
     // USUÁRIO
@@ -181,10 +182,9 @@ export default function EditarUsuario() {
                 // PEGAR ID
                 // ==================================================
 
-                const id =
-                    usuario.id_usuario ??
-                    usuario.id ??
-                    null;
+                const id = idDaRota
+                    ? Number(idDaRota)
+                    : (usuario.id_usuario ?? usuario.id ?? null);
 
 
                 if (!id) {
@@ -360,10 +360,9 @@ export default function EditarUsuario() {
                 };
 
 
-                localStorage.setItem(
-                    'usuario',
-                    JSON.stringify(usuarioFinal)
-                );
+                if (!idDaRota || Number(idDaRota) === Number(usuario.id_usuario ?? usuario.id)) {
+                    localStorage.setItem('usuario', JSON.stringify(usuarioFinal));
+                }
 
 
                 console.log(
@@ -469,7 +468,7 @@ export default function EditarUsuario() {
 
         };
 
-    }, [navigate]);
+    }, [navigate, idDaRota]);
 
 
     // ==================================================
@@ -753,8 +752,8 @@ export default function EditarUsuario() {
     // ==================================================
 
     const voltar = () => {
-
-        navigate('/');
+        const usuarioLogado = JSON.parse(localStorage.getItem('usuario') || '{}');
+        navigate(Number(usuarioLogado.tipo) === 0 && idDaRota ? '/admin/usuarios' : '/');
 
     };
 
@@ -1033,6 +1032,12 @@ export default function EditarUsuario() {
 
                 }
             );
+
+            // Quando o ADM edita outro perfil, volta diretamente à gestão.
+            const usuarioLogado = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (Number(usuarioLogado.tipo) === 0 && idDaRota) {
+                setTimeout(() => navigate('/admin/usuarios', { replace: true }), 600);
+            }
 
         } catch (error) {
 

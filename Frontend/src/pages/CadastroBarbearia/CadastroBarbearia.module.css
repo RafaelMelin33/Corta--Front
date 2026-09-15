@@ -248,3 +248,13 @@
         padding: 30px;
     }
 }
+
+@media (max-width: 600px) {
+    .header { height: 56px; padding: 0 16px; }
+    .logoHeader { font-size: 19px; }
+    .areaUsuarioHeader { gap: 8px; }
+    .btnSair { padding: 7px 14px; }
+    .areaFormulario { align-items: flex-start; padding: 18px 12px 32px; }
+    .cartaoCadastro { border-radius: 16px; padding: 26px 18px; }
+    .grupoTipoUsuario { align-items: flex-start; flex-direction: column; gap: 10px; }
+}

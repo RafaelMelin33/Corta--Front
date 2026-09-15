@@ -1,191 +1,159 @@
-import React, { useState } from "react";
-import { Users, Image as ImageIcon, Scissors, Plus, X, Upload } from "lucide-react";
+import { useEffect, useMemo, useState } from 'react';
+import { Image as ImageIcon, Plus, Scissors, Trash2, Upload, Users } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { API_URL, apiFetch, mensagemDaApi } from '../../services/api';
+import MensagemCard from '../../components/MensagemCard/MensagemCard';
+import ModalAdicionarServico from '../../components/ModalAdicionarServico/ModalAdicionarServico';
+import SeletorIdentidadeVisual from '../../components/SeletorIdentidadeVisual/SeletorIdentidadeVisual';
+import TabelaHorarios from '../../components/TabelaHorarios/TabelaHorarios';
+import MaskedInput from '../../components/MaskedInput/MaskedInput';
+import styles from './PersonalizacaoBarbearia.module.css';
 
-import styles from "./PersonalizacaoBarbearia.module.css";
-import SeletorIdentidadeVisual from "../../components/SeletorIdentidadeVisual/SeletorIdentidadeVisual.jsx";
-import TabelaHorarios from "../../components/TabelaHorarios/TabelaHorarios.jsx";
-import ModalAdicionarServico from "../../components/ModalAdicionarServico/ModalAdicionarServico.jsx";
+const DIAS = [['segunda', 'Segunda'], ['terca', 'Terça'], ['quarta', 'Quarta'], ['quinta', 'Quinta'], ['sexta', 'Sexta'], ['sabado', 'Sábado'], ['domingo', 'Domingo']];
+const criarDias = () => DIAS.map(([chave, nome]) => ({ chave, nome, fechado: true, manhaInicio: '08:00', manhaFim: '12:00', tardeInicio: '14:00', tardeFim: '18:00' }));
+const novoFuncionario = () => ({ id: crypto.randomUUID(), nome: '', descricao: '', dias: [], servicos: [] });
+const CORES_INICIAIS = { primaria: '#FF9C08', secundaria: '#000000', terciaria: '#FFFFFF', textoPrimario: '#000000', textoSecundario: '#FFFFFF' };
+const normalizarHora = (valor) => valor ? String(valor).slice(0, 5) : '';
 
-
-const COR_OPTIONS = [
-    { id: "preto", label: "Preto", color: "#000000" },
-    { id: "ambar", label: "Âmbar", color: "#FF9C08" },
-    { id: "branco", label: "Branco", color: "#FFFFFF" },
-];
-
-const DIAS_INICIAIS = [
-    { nome: "Segunda", fechado: true, manhaInicio: "09:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "18:00" },
-    { nome: "Terça", fechado: false, manhaInicio: "08:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "20:00" },
-    { nome: "Quarta", fechado: false, manhaInicio: "08:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "20:00" },
-    { nome: "Quinta", fechado: false, manhaInicio: "08:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "20:00" },
-    { nome: "Sexta", fechado: false, manhaInicio: "08:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "20:00" },
-    { nome: "Sábado", fechado: false, manhaInicio: "09:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "18:00" },
-    { nome: "Domingo", fechado: true, manhaInicio: "09:00", manhaFim: "12:00", tardeInicio: "14:00", tardeFim: "18:00" },
-];
-
-export default function PersonalizacaoBarbearia() {
-    const [funcionarios, setFuncionarios] = useState(["Thiago", "Rogério"]);
-    const [historia, setHistoria] = useState(
-        "Desde 2015, transformamos vidas visão inovadora, o empreendedor e barbeiro Diego. Compomos entusiasmo, na missão de dar um novo conceito em barbearias na cidade de Birigui SP. Movido pelo desejo de homenagear seu falecido avô materno, Seu Alfredo, batizou o estabelecimento como Barbearia Sir Alfred. Desde então, o Sir Alfred se destaca na região, proporcionando aos clientes uma experiência encapsulada em barbearia, encantando os com uma atenção especial nos detalhes."
-    );
-    const [corSelecionada, setCorSelecionada] = useState("ambar");
-    const [dias, setDias] = useState(DIAS_INICIAIS);
-    const [servicos, setServicos] = useState([
-        { nome: "Corte" },
-        { nome: "Barba" },
-        { nome: "Combo (Corte + Barba)" },
-        { nome: "Sobrancelha" },
-    ]);
+export default function PersonalizacaoBarbearia({ modoEdicao = false }) {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const idUsuarioAlvo = searchParams.get('usuario');
+    const sufixoUsuario = idUsuarioAlvo ? `?id_usuario=${encodeURIComponent(idUsuarioAlvo)}` : '';
+    const [historia, setHistoria] = useState('');
+    const [localizacao, setLocalizacao] = useState('');
+    const [contatos, setContatos] = useState({ telefone: '', email: '', instagram: '' });
+    const [cores, setCores] = useState(CORES_INICIAIS);
+    const [dias, setDias] = useState(criarDias);
+    const [funcionarios, setFuncionarios] = useState([novoFuncionario()]);
+    const [servicos, setServicos] = useState([]);
+    const [logo, setLogo] = useState(null);
+    const [fotos, setFotos] = useState([]);
+    const [previewLogo, setPreviewLogo] = useState(null);
+    const [previewsFotos, setPreviewsFotos] = useState([]);
     const [modalAberto, setModalAberto] = useState(false);
+    const [carregando, setCarregando] = useState(true);
+    const [salvando, setSalvando] = useState(false);
+    const [mensagem, setMensagem] = useState(null);
+    const diasAbertos = useMemo(() => dias.filter((dia) => !dia.fechado), [dias]);
 
-    const toggleDia = (nomeDia) => {
-        setDias((prev) => prev.map((d) => (d.nome === nomeDia ? { ...d, fechado: !d.fechado } : d)));
-    };
+    useEffect(() => {
+        async function carregar() {
+            try {
+                const [dados, dadosServicos] = await Promise.all([apiFetch(`/barbearia/personalizacao${sufixoUsuario}`), apiFetch(`/barbearia/servicos${sufixoUsuario}`)]);
+                setServicos(dadosServicos.servicos || []);
+                if (!dados.personalizado) {
+                    if (modoEdicao) navigate('/personalizacaobarbearia', { replace: true });
+                    return;
+                }
+                const personalizacao = dados.personalizacao;
+                setHistoria(personalizacao.historia || '');
+                setLocalizacao(personalizacao.localizacao || '');
+                setCores({
+                    primaria: personalizacao.cor_primaria || CORES_INICIAIS.primaria,
+                    secundaria: personalizacao.cor_secundaria || CORES_INICIAIS.secundaria,
+                    terciaria: personalizacao.cor_terciaria || CORES_INICIAIS.terciaria,
+                    textoPrimario: personalizacao.cor_texto_primario || CORES_INICIAIS.textoPrimario,
+                    textoSecundario: personalizacao.cor_texto_secundario || CORES_INICIAIS.textoSecundario,
+                });
+                setContatos({ telefone: personalizacao.contato_telefone || '', email: personalizacao.contato_email || '', instagram: personalizacao.instagram || '' });
+                setLogo(dados.logo || null);
+                setFotos(dados.fotos || []);
+                setPreviewLogo(dados.logo ? `${API_URL}${dados.logo}` : null);
+                setPreviewsFotos((dados.fotos || []).map((foto) => `${API_URL}${foto.url}`));
+                const diasComChave = (dados.dias_servico || []).map((dia, indice) => ({ ...dia, chave: dia.dia || DIAS[indice]?.[0] }));
+                const diasDaApi = new Map(diasComChave.map((dia) => [dia.chave, dia]));
+                setDias(criarDias().map((dia) => {
+                    const salvo = diasDaApi.get(dia.chave);
+                    return salvo ? { ...dia, fechado: false, manhaInicio: normalizarHora(salvo.entrada_manha), manhaFim: normalizarHora(salvo.saida_manha), tardeInicio: normalizarHora(salvo.entrada_tarde), tardeFim: normalizarHora(salvo.saida_tarde) } : dia;
+                }));
+                const equipe = (dados.funcionarios || []).map((funcionario) => ({ id: funcionario.id_funcionario, nome: funcionario.nome || '', descricao: funcionario.descricao || '', dias: (funcionario.dias || [funcionario.id_dias]).map((idDia) => diasComChave.find((dia) => dia.id_dia === idDia)?.chave).filter(Boolean), servicos: funcionario.servicos || [] }));
+                setFuncionarios(equipe.length ? equipe : [novoFuncionario()]);
+                if (!modoEdicao) navigate('/editarbarbearia', { replace: true });
+            } catch (erro) {
+                if (erro.status !== 401) setMensagem({ informacao: mensagemDaApi(erro), tipo: 'erro' });
+            } finally { setCarregando(false); }
+        }
+        carregar();
+    }, [modoEdicao, navigate, sufixoUsuario]);
 
-    const alterarHorario = (nomeDia, campo, valor) => {
-        setDias((prev) => prev.map((d) => (d.nome === nomeDia ? { ...d, [campo]: valor } : d)));
-    };
+    const atualizarFuncionario = (indice, campo, valor) => setFuncionarios((lista) => lista.map((funcionario, i) => i === indice ? { ...funcionario, [campo]: valor } : funcionario));
+    const alternarServicoFuncionario = (indice, idServico) => setFuncionarios((lista) => lista.map((funcionario, i) => i === indice ? { ...funcionario, servicos: funcionario.servicos.includes(idServico) ? funcionario.servicos.filter((id) => id !== idServico) : [...funcionario.servicos, idServico] } : funcionario));
+    const alternarDiaFuncionario = (indice, chaveDia) => setFuncionarios((lista) => lista.map((funcionario, i) => i === indice ? { ...funcionario, dias: funcionario.dias.includes(chaveDia) ? funcionario.dias.filter((dia) => dia !== chaveDia) : [...funcionario.dias, chaveDia] } : funcionario));
 
-    const removerServico = (index) => {
-        setServicos((prev) => prev.filter((_, i) => i !== index));
-    };
-
-    const adicionarServico = (novoServico) => {
-        setServicos((prev) => [...prev, { nome: novoServico.nome }]);
+    async function adicionarServico(servico) {
+        const resposta = await apiFetch(`/barbearia/servicos${sufixoUsuario}`, { method: 'POST', body: JSON.stringify(servico) });
+        setServicos((lista) => [...lista, resposta.servico]);
         setModalAberto(false);
-    };
+        setMensagem(resposta.mensagem);
+    }
 
-    return (
-        <div className={styles.page}>
-            <div className={styles.container}>
-                <div className={styles.span2}>
-                    <h1 className={styles.titulo}>PERSONALIZAÇÃO</h1>
-                    <div className={styles.tituloRegua} />
-                </div>
+    async function removerServico(servico) {
+        if (!window.confirm(`Remover o serviço “${servico.nome}”?`)) return;
+        try {
+            const resposta = await apiFetch(`/barbearia/servicos/${servico.id_servico}${sufixoUsuario}`, { method: 'DELETE' });
+            setServicos((lista) => lista.filter((item) => item.id_servico !== servico.id_servico));
+            setFuncionarios((lista) => lista.map((funcionario) => ({ ...funcionario, servicos: funcionario.servicos.filter((id) => id !== servico.id_servico) })));
+            setMensagem(resposta.mensagem);
+        } catch (erro) { setMensagem({ informacao: mensagemDaApi(erro), tipo: 'erro' }); }
+    }
 
-                {/* Equipe */}
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-            <span className={styles.dot}>
-              <Users size={16} />
-            </span>
-                        Equipe
-                    </div>
-                    <label className={styles.label} htmlFor="qtd-funcionarios">
-                        Quantidade de Funcionários
-                    </label>
-                    <input
-                        id="qtd-funcionarios"
-                        className={styles.input}
-                        type="number"
-                        min={1}
-                        value={funcionarios.length}
-                        onChange={(e) => {
-                            const qtd = Math.max(1, Number(e.target.value) || 1);
-                            setFuncionarios((prev) => {
-                                const novo = [...prev];
-                                while (novo.length < qtd) novo.push("");
-                                return novo.slice(0, qtd);
-                            });
-                        }}
-                        style={{ marginBottom: 16 }}
-                    />
-                    <div className={styles.row2}>
-                        {funcionarios.map((nome, i) => (
-                            <div key={i}>
-                                <label className={styles.label}>Funcionário {i + 1}</label>
-                                <input
-                                    className={styles.input}
-                                    value={nome}
-                                    onChange={(e) => {
-                                        const novo = [...funcionarios];
-                                        novo[i] = e.target.value;
-                                        setFuncionarios(novo);
-                                    }}
-                                />
-                            </div>
-                        ))}
-                    </div>
+    function montarFormulario() {
+        const formulario = new FormData();
+        if (idUsuarioAlvo) formulario.append('id_usuario', idUsuarioAlvo);
+        [['cor_primaria', cores.primaria], ['cor_secundaria', cores.secundaria], ['cor_terciaria', cores.terciaria], ['cor_texto_primario', cores.textoPrimario], ['cor_texto_secundario', cores.textoSecundario], ['historia', historia.trim()], ['localizacao', localizacao.trim()], ['contato_telefone', contatos.telefone.trim()], ['contato_email', contatos.email.trim()], ['instagram', contatos.instagram.trim()]].forEach(([campo, valor]) => formulario.append(campo, valor));
+        dias.forEach((dia) => {
+            if (!dia.fechado) [['entrada_manha', dia.manhaInicio], ['saida_manha', dia.manhaFim], ['entrada_tarde', dia.tardeInicio], ['saida_tarde', dia.tardeFim]].forEach(([campo, valor]) => formulario.append(`${dia.chave}_${campo}`, valor));
+        });
+        const equipe = funcionarios.filter((funcionario) => funcionario.nome.trim());
+        formulario.append('num_funcionarios', equipe.length);
+        equipe.forEach((funcionario, indice) => {
+            formulario.append(`funcionarios[${indice}][nome]`, funcionario.nome.trim());
+            formulario.append(`funcionarios[${indice}][descricao]`, funcionario.descricao.trim());
+            formulario.append(`funcionarios[${indice}][dias]`, funcionario.dias.join(','));
+            formulario.append(`funcionarios[${indice}][servicos]`, funcionario.servicos.join(','));
+        });
+        if (logo instanceof File) formulario.append('logo', logo);
+        fotos.forEach((foto, indice) => { if (foto instanceof File) formulario.append(`foto${indice + 1}`, foto); });
+        return formulario;
+    }
+
+    async function salvar(evento) {
+        evento.preventDefault();
+        if (!diasAbertos.length) return setMensagem({ informacao: 'Informe ao menos um dia de atendimento.', tipo: 'erro' });
+        if (funcionarios.some((funcionario) => funcionario.nome.trim() && !funcionario.dias.length)) return setMensagem({ informacao: 'Vincule pelo menos um dia de serviço para cada funcionário.', tipo: 'erro' });
+        setSalvando(true);
+        try {
+            const resposta = await apiFetch('/barbearia/personalizacao', { method: modoEdicao ? 'PUT' : 'POST', body: montarFormulario() });
+            setMensagem(resposta.mensagem);
+            navigate(idUsuarioAlvo ? `/estabelecimento?usuario=${idUsuarioAlvo}` : '/estabelecimento', { replace: true });
+        } catch (erro) { setMensagem({ informacao: mensagemDaApi(erro), tipo: 'erro' }); } finally { setSalvando(false); }
+    }
+
+    return <main className={styles.page}>
+        <MensagemCard mensagem={mensagem} fechar={() => setMensagem(null)} />
+        <form className={styles.container} onSubmit={salvar}>
+            <div className={`${styles.span2} ${styles.cabecalhoPagina}`}><p className={styles.eyebrow}>{modoEdicao ? 'GESTÃO DO ESTABELECIMENTO' : 'PRIMEIROS PASSOS'}</p><h1 className={styles.titulo}>{modoEdicao ? 'Editar barbearia' : 'Personalize sua barbearia'}</h1><p className={styles.subtitulo}>Organize sua vitrine, equipe, serviços, horários e identidade visual em um só lugar.</p><div className={styles.tituloRegua} /></div>
+            {carregando ? <p className={styles.carregando}>Carregando dados da barbearia…</p> : <>
+                <section className={styles.section}><div className={styles.sectionHead}><span className={styles.dot}><Users size={16} /></span>Equipe</div>
+                    {funcionarios.map((funcionario, indice) => <div className={styles.funcionario} key={funcionario.id}>
+                        <div className={styles.funcionarioCabecalho}><strong>Funcionário {indice + 1}</strong>{funcionarios.length > 1 && <button type="button" onClick={() => setFuncionarios((lista) => lista.filter((_, i) => i !== indice))}><Trash2 size={15} /> Remover</button>}</div>
+                        <label className={styles.label}>Nome<MaskedInput className={styles.input} mask={/^[A-Za-zÀ-ÿ ]*$/} value={funcionario.nome} onAccept={(valor) => atualizarFuncionario(indice, 'nome', valor)} /></label>
+                        <label className={styles.label}>Descrição / especialidade<MaskedInput className={styles.input} value={funcionario.descricao} onAccept={(valor) => atualizarFuncionario(indice, 'descricao', valor)} placeholder="Ex.: Barbeiro especialista" /></label>
+                        <span className={styles.label}>Dias de serviço vinculados</span><div className={styles.checks}>{diasAbertos.map((dia) => <label key={dia.chave} className={styles.check}><input type="checkbox" checked={funcionario.dias.includes(dia.chave)} onChange={() => alternarDiaFuncionario(indice, dia.chave)} />{dia.nome}</label>)}</div>
+                        <span className={styles.label}>Serviços que realiza</span><div className={styles.checks}>{servicos.length ? servicos.map((servico) => <label key={servico.id_servico} className={styles.check}><input type="checkbox" checked={funcionario.servicos.includes(servico.id_servico)} onChange={() => alternarServicoFuncionario(indice, servico.id_servico)} />{servico.nome}</label>) : <small>Cadastre serviços abaixo para vinculá-los.</small>}</div>
+                    </div>)}
+                    <button type="button" className={styles.secundario} onClick={() => setFuncionarios((lista) => [...lista, novoFuncionario()])}><Plus size={16} /> Adicionar funcionário</button>
                 </section>
-
-                {/* História da Empresa */}
-                <section className={styles.section}>
-                    <div className={styles.sectionHead}>
-            <span className={styles.dot}>
-              <Scissors size={16} />
-            </span>
-                        História da Empresa
-                    </div>
-                    <textarea
-                        className={styles.textarea}
-                        value={historia}
-                        onChange={(e) => setHistoria(e.target.value)}
-                        style={{ minHeight: 140, fontStyle: "italic", fontSize: 13 }}
-                    />
-                </section>
-
-                {/* Imagens */}
-                <section className={`${styles.section} ${styles.span2}`}>
-                    <div className={styles.sectionHead}>
-            <span className={styles.dot}>
-              <ImageIcon size={16} />
-            </span>
-                        Imagens da Empresa
-                    </div>
-                    <div className={styles.row2}>
-                        <label className={styles.upload}>
-                            <Upload size={18} />
-                            Arraste fotos aqui
-                        </label>
-                        <label className={styles.upload}>
-                            <Upload size={18} />
-                            Upload do logo
-                        </label>
-                    </div>
-                </section>
-
-                {/* Componente: Seletor de Identidade Visual */}
-                <section className={`${styles.section} ${styles.span2}`}>
-                    <SeletorIdentidadeVisual options={COR_OPTIONS} value={corSelecionada} onChange={setCorSelecionada} />
-                </section>
-
-                {/* Componente: Tabela de Horários */}
-                <section className={`${styles.section} ${styles.span2}`}>
-                    <TabelaHorarios dias={dias} onToggleDia={toggleDia} onChangeHorario={alterarHorario} />
-                </section>
-
-                {/* Serviços */}
-                <section className={`${styles.section} ${styles.span2}`}>
-                    <div className={styles.sectionHead}>
-            <span className={styles.dot}>
-              <Scissors size={16} />
-            </span>
-                        Serviços Disponíveis
-                    </div>
-                    <div className={styles.tags}>
-                        {servicos.map((s, i) => (
-                            <span className={styles.tag} key={i}>
-                {s.nome}
-                                <button onClick={() => removerServico(i)} aria-label={`Remover ${s.nome}`}>
-                  <X size={13} />
-                </button>
-              </span>
-                        ))}
-                        <button className={styles.tagAdd} onClick={() => setModalAberto(true)}>
-                            <Plus size={13} /> Adicionar Serviço
-                        </button>
-                    </div>
-                </section>
-
-                <div className={styles.span2}>
-                    <button className={styles.btnPrimario} onClick={() => alert("Alterações salvas!")}>
-                        SALVAR ALTERAÇÕES
-                    </button>
-                </div>
-            </div>
-
-            {/* Componente: Modal Adicionar Serviço */}
-            <ModalAdicionarServico open={modalAberto} onClose={() => setModalAberto(false)} onAdd={adicionarServico} />
-        </div>
-    );
+                <section className={styles.section}><div className={styles.sectionHead}><span className={styles.dot}><Scissors size={16} /></span>História da empresa</div><label className={styles.label}>Conte sua história<textarea className={styles.textarea} value={historia} onChange={(e) => setHistoria(e.target.value)} /></label><label className={styles.label}>Localização<MaskedInput className={styles.input} value={localizacao} onAccept={setLocalizacao} placeholder="Rua, número, bairro e cidade" /></label></section>
+                <section className={styles.section}><div className={styles.sectionHead}><span className={styles.dot}><ImageIcon size={16} /></span>Contatos da barbearia</div><label className={styles.label}>Telefone / WhatsApp<MaskedInput className={styles.input} mask="(00) 0000[0]-0000" value={contatos.telefone} onAccept={(telefone) => setContatos({ ...contatos, telefone })} placeholder="(00) 00000-0000" /></label><label className={styles.label}>E-mail de contato<MaskedInput className={styles.input} mask={/^[\w.+-@]*$/} type="email" value={contatos.email} onAccept={(email) => setContatos({ ...contatos, email })} placeholder="contato@barbearia.com" /></label><label className={styles.label}>Instagram<MaskedInput className={styles.input} mask={/^@?[A-Za-z0-9._]*$/} value={contatos.instagram} onAccept={(instagram) => setContatos({ ...contatos, instagram })} placeholder="@sua_barbearia" /></label></section>
+                <section className={`${styles.section} ${styles.span2}`}><div className={styles.sectionHead}><span className={styles.dot}><ImageIcon size={16} /></span>Imagens da empresa</div><div className={styles.row2}><label className={styles.upload}><Upload size={18} />{logo ? 'Trocar logo' : 'Upload do logo'}<input type="file" accept="image/png,image/jpeg,image/webp" onChange={(e) => { const arquivo = e.target.files?.[0] || null; setLogo(arquivo); setPreviewLogo(arquivo ? URL.createObjectURL(arquivo) : null); }} /></label><label className={styles.upload}><Upload size={18} />Adicionar fotos<input type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={(e) => { const arquivos = Array.from(e.target.files || []).slice(0, 5); setFotos(arquivos); setPreviewsFotos(arquivos.map((arquivo) => URL.createObjectURL(arquivo))); }} /></label></div>{(previewLogo || previewsFotos.length > 0) && <div className={styles.previews}>{previewLogo && <figure className={styles.previewLogo}><img src={previewLogo} alt="Prévia do logo" /><figcaption>Logo</figcaption></figure>}{previewsFotos.map((url, indice) => <figure className={styles.previewFoto} key={url}><img src={url} alt={`Prévia da foto ${indice + 1}`} /><figcaption>Foto {indice + 1}</figcaption></figure>)}</div>}</section>
+                <section className={`${styles.section} ${styles.span2}`}><SeletorIdentidadeVisual value={cores} onChange={setCores} /></section>
+                <section className={`${styles.section} ${styles.span2}`}><TabelaHorarios dias={dias} onToggleDia={(nome) => setDias((lista) => lista.map((dia) => dia.nome === nome ? { ...dia, fechado: !dia.fechado } : dia))} onChangeHorario={(nome, campo, valor) => setDias((lista) => lista.map((dia) => dia.nome === nome ? { ...dia, [campo]: valor } : dia))} /></section>
+                <section className={`${styles.section} ${styles.span2}`}><div className={styles.sectionHead}><span className={styles.dot}><Scissors size={16} /></span>Serviços disponíveis</div><div className={styles.tags}>{servicos.map((servico) => <span className={styles.tag} key={servico.id_servico}>{servico.nome}<button type="button" onClick={() => removerServico(servico)} aria-label={`Remover ${servico.nome}`}><Trash2 size={13} /></button></span>)}<button type="button" className={styles.tagAdd} onClick={() => setModalAberto(true)}><Plus size={13} />Adicionar serviço</button></div></section>
+                <div className={styles.span2}><button className={styles.btnPrimario} disabled={salvando}>{salvando ? 'SALVANDO…' : modoEdicao ? 'SALVAR ALTERAÇÕES' : 'CRIAR BARBEARIA'}</button></div>
+            </>}
+        </form>
+        <ModalAdicionarServico open={modalAberto} onClose={() => setModalAberto(false)} onAdd={adicionarServico} />
+    </main>;
 }

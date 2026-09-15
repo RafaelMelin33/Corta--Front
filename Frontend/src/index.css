@@ -1,10 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* Base compartilhada: impede que padding estoure a largura do viewport e
+   garante que imagens não criem rolagem horizontal em telas pequenas. */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 *{
   margin: 0;
   padding: 0;
   border: none;
   font-family: 'Montserrat', sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+img, picture, video, canvas, svg {
+  max-width: 100%;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+@media (max-width: 768px) {
+  /* Fonte mínima de 16px em controles evita o zoom automático do Safari/iOS. */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
 :root {
@@ -34,5 +66,4 @@
   --cor-texto-icone-b: #FF9C08;
   --cor-card-b: #000000;
 }
-
 

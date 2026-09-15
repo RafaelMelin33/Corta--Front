@@ -59,7 +59,7 @@ export async function apiFetch(endpoint, options = {}) {
     const texto =
         await resposta.text();
 
-    let dados = {};
+    let dados;
 
 
     try {

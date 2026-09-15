@@ -20,7 +20,7 @@ export default function Botao({ acao, pagina, texto, id }) {
         <button
             id={id}
             type="button"
-            className={css[cor]}
+            className={css.botao}
             onClick={handleClick}
         >
             {texto}

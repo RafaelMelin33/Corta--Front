@@ -343,12 +343,14 @@
    ATÉ 420PX
 ================================================== */
 
-@media screen and (max-width: 420px) {
+/* A navegação vira menu recolhível também em tablets estreitos; 420px fazia
+   os links do administrador ultrapassarem a barra em celulares maiores. */
+@media screen and (max-width: 768px) {
 
     .container {
         height: 64px;
 
-        padding: 0 20px;
+        padding: 0 18px;
     }
 
 

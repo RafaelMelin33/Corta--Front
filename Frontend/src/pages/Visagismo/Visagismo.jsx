@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
 
 import EtapaImagem from './EtapaImagem/EtapaImagem';
 import EtapaResultado from './EtapaResultado/EtapaResultado';
@@ -45,7 +43,6 @@ function Visagismo() {
 
     return (
         <div className={styles.pagina}>
-            <Header />
 
             <main className={styles.conteudo}>
                 <div className={styles.indicadorEtapas}>
@@ -72,7 +69,6 @@ function Visagismo() {
                 )}
             </main>
 
-            <Footer />
         </div>
     );
 }

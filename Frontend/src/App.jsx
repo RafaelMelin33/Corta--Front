@@ -16,6 +16,7 @@ import Erro from "./pages/Erro/Erro";
 import PersonalizacaoBarbearia from "./pages/PersonalizacaoBarbearia/PersonalizacaoBarbearia.jsx";
 import EditarBarbearia from "./pages/EditarBarbearia/EditarBarbearia.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
+import Visagismo from "./pages/Visagismo/Visagismo.jsx";
 
 export default function App() {
     return (
@@ -81,6 +82,9 @@ export default function App() {
                     path="/editarbarbearia"
                     element={<EditarBarbearia />}
                 />
+
+                <Route path="/visagismo" element={<Visagismo />} />
+
                 <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 <Route path="/editarusuario/:id" element={<EditarUsuario />} />
 

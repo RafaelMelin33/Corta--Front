@@ -1,7 +1,7 @@
 .etapa {
     width: 100%;
     min-height: 610px;
-    padding: 25px 0 55px;
+    padding: 30px 0 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10,11 +10,11 @@
 }
 
 .topo {
-    width: min(1050px, calc(100% - 50px));
+    width: min(1100px, calc(100% - 50px));
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 
 .botaoVoltar,
@@ -23,21 +23,21 @@
     background: #000;
     color: #fff;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.25s ease;
 }
 
 .botaoVoltar {
-    min-width: 58px;
-    height: 14px;
-    padding: 0 12px;
+    min-width: 75px;
+    height: 25px;
+    padding: 0 16px;
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 5px;
 }
 
 .botaoVoltar svg {
@@ -47,7 +47,8 @@
 .botaoPular {
     background: transparent;
     color: #000;
-    padding: 5px 10px;
+    padding: 7px 12px;
+    font-size: 11px;
 }
 
 .botaoVoltar:hover,
@@ -64,20 +65,24 @@
 
 .tituloArea {
     text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
 }
 
 .tituloArea h1 {
     margin: 0;
     color: #050505;
-    font-size: 21px;
+    font-size: 29px;
     line-height: 1.15;
     font-weight: 900;
     font-style: italic;
 }
 
 .tituloArea p {
-    display: none;
+    display: block;
+    margin: 10px 0 0;
+    color: #555;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .inputArquivo {
@@ -85,9 +90,9 @@
 }
 
 .areaUpload {
-    width: 278px;
-    height: 66px;
-    border: 1.5px dashed #777;
+    width: 480px;
+    height: 120px;
+    border: 2px dashed #777;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -111,27 +116,29 @@
 }
 
 .areaUpload.comImagem {
-    height: 200px;
+    height: 300px;
     border-style: solid;
 }
 
 .iconeUpload {
-    font-size: 20px;
-    margin-bottom: 3px;
+    font-size: 32px;
+    margin-bottom: 8px;
 }
 
 .iconeUpload svg {
+    width: 32px;
+    height: 32px;
     stroke-width: 1.8;
 }
 
 .areaUpload strong {
-    font-size: 9px;
+    font-size: 13px;
     font-weight: 800;
 }
 
 .areaUpload span {
-    margin-top: 2px;
-    font-size: 7px;
+    margin-top: 5px;
+    font-size: 10px;
     color: #555;
 }
 
@@ -154,7 +161,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
+    gap: 8px;
     color: #fff;
     background: rgba(0, 0, 0, 0);
     opacity: 0;
@@ -167,65 +174,66 @@
 }
 
 .overlayImagem svg {
-    font-size: 23px;
+    width: 30px;
+    height: 30px;
 }
 
 .overlayImagem span {
     color: #fff;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .dicas {
     display: flex;
-    gap: 15px;
-    margin-top: 8px;
+    gap: 18px;
+    margin-top: 15px;
 }
 
 .dica {
-    width: 86px;
-    height: 51px;
+    width: 125px;
+    height: 75px;
     border: 1px solid #aaa;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+    gap: 7px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
     transition: all 0.25s ease;
 }
 
 .dica:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .iconeDica {
-    height: 17px;
+    height: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .iconeDica svg {
-    width: 18px;
-    height: 18px;
+    width: 25px;
+    height: 25px;
     stroke-width: 1.8;
 }
 
 .dica strong {
-    font-size: 7.5px;
+    font-size: 10px;
     font-weight: 800;
 }
 
 .botaoAnalise {
-    margin-top: 16px;
+    margin-top: 25px;
     border: none;
     background: #000;
     color: #fff;
-    padding: 8px 17px;
+    padding: 12px 25px;
     font-family: inherit;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -253,42 +261,142 @@
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .etapa {
         min-height: 580px;
-        padding-top: 15px;
+        padding: 20px 0 50px;
     }
 
     .topo {
         width: calc(100% - 30px);
     }
 
+    .tituloArea {
+        margin-bottom: 18px;
+        padding: 0 15px;
+    }
+
     .tituloArea h1 {
-        font-size: 19px;
+        font-size: 24px;
+    }
+
+    .tituloArea p {
+        font-size: 11px;
     }
 
     .areaUpload {
-        width: calc(100% - 50px);
-        max-width: 320px;
+        width: calc(100% - 40px);
+        max-width: 480px;
+        height: 120px;
+    }
+
+    .areaUpload.comImagem {
+        height: 280px;
+    }
+
+    .areaUpload strong {
+        font-size: 12px;
+        text-align: center;
+        padding: 0 15px;
     }
 
     .dicas {
         width: calc(100% - 30px);
         justify-content: center;
+        gap: 10px;
+    }
+
+    .dica {
+        width: 110px;
+        height: 70px;
+    }
+
+    .dica strong {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .etapa {
+        padding-top: 15px;
+    }
+
+    .botaoVoltar {
+        min-width: 70px;
+        height: 24px;
+        font-size: 10px;
+    }
+
+    .botaoPular {
+        font-size: 10px;
+    }
+
+    .tituloArea h1 {
+        font-size: 21px;
+    }
+
+    .tituloArea p {
+        font-size: 10px;
+    }
+
+    .areaUpload {
+        width: calc(100% - 30px);
+        height: 115px;
+    }
+
+    .areaUpload.comImagem {
+        height: 250px;
+    }
+
+    .iconeUpload svg {
+        width: 29px;
+        height: 29px;
+    }
+
+    .areaUpload strong {
+        font-size: 10px;
+    }
+
+    .areaUpload span {
+        font-size: 8px;
+    }
+
+    .dicas {
         gap: 7px;
     }
 
     .dica {
-        width: 90px;
+        width: 95px;
+        height: 68px;
+    }
+
+    .iconeDica svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .dica strong {
+        font-size: 8px;
+    }
+
+    .botaoAnalise {
+        margin-top: 22px;
+        padding: 11px 20px;
+        font-size: 10px;
     }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 360px) {
     .tituloArea h1 {
-        font-size: 17px;
+        font-size: 19px;
     }
 
     .dica {
-        width: 82px;
+        width: 88px;
+        height: 64px;
+    }
+
+    .dica strong {
+        font-size: 7px;
     }
 }

@@ -1,7 +1,7 @@
 .etapa {
     width: 100%;
-    min-height: 610px;
-    padding: 15px 0 50px;
+    min-height: 650px;
+    padding: 20px 0 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -13,13 +13,13 @@
     width: min(1050px, calc(100% - 50px));
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 
 .botaoVoltar {
-    min-width: 58px;
-    height: 14px;
-    padding: 0 12px;
+    min-width: 80px;
+    height: 32px;
+    padding: 0 16px;
     border: none;
     border-radius: 20px;
     background: #000;
@@ -27,9 +27,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    gap: 6px;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 800;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -45,12 +45,12 @@
 
 .cabecalho {
     text-align: center;
-    margin-bottom: 7px;
+    margin-bottom: 20px;
 }
 
 .cabecalho h1 {
     margin: 0;
-    font-size: 17px;
+    font-size: 26px;
     line-height: 1.2;
     font-style: italic;
     font-weight: 900;
@@ -59,7 +59,7 @@
 
 .cabecalho p {
     margin: 8px 0 0;
-    font-size: 9px;
+    font-size: 14px;
     font-weight: 500;
     color: #222;
 }
@@ -68,25 +68,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 16px;
     width: 100%;
 }
 
 .rostoOriginal {
-    width: 48px;
+    width: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 .rostoOriginal img,
 .semImagem {
-    width: 48px;
-    height: 48px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #999;
+    border: 2px solid #999;
 }
 
 .semImagem {
@@ -98,31 +98,35 @@
 }
 
 .semImagem svg {
-    width: 22px;
-    height: 22px;
+    width: 32px;
+    height: 32px;
 }
 
 .rostoOriginal span {
-    width: 55px;
-    margin-top: 4px;
+    width: 80px;
+    margin-top: 6px;
     color: #555;
     text-align: center;
-    font-size: 5px;
-    line-height: 1.1;
+    font-size: 11px;
+    line-height: 1.2;
 }
 
+/* Container dos cards padronizados */
 .cortes {
     display: flex;
-    gap: 8px;
+    gap: 16px;
+    align-items: stretch; /* Garante que todos os cards tenham a mesma altura */
 }
 
+/* Card padronizado */
 .cardCorte {
-    width: 116px;
-    padding: 0;
+    width: 220px; /* Largura fixa igual para todos */
+    display: flex;
+    flex-direction: column;
     border: 2px solid transparent;
-    border-radius: 6px;
-    background: #f7f7f7;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
     overflow: hidden;
     cursor: pointer;
     text-align: left;
@@ -131,27 +135,29 @@
 
 .cardCorte:hover {
     transform: translateY(-4px);
-    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
 }
 
 .cardCorte.selecionado {
     border-color: #16b83f;
-    box-shadow: 0 4px 12px rgba(22, 184, 63, 0.25);
+    box-shadow: 0 4px 14px rgba(22, 184, 63, 0.3);
     transform: translateY(-3px);
 }
 
+/* Imagem padronizada */
 .imagemCorte {
     width: 100%;
-    height: 108px;
+    height: 160px; /* Altura fixa para todas as imagens */
     position: relative;
     overflow: hidden;
     background: #ddd;
+    flex-shrink: 0;
 }
 
 .imagemCorte img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Ajusta sem distorcer */
     display: block;
     transition: transform 0.4s ease;
 }
@@ -162,10 +168,10 @@
 
 .check {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 19px;
-    height: 19px;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -176,48 +182,51 @@
 }
 
 .check svg {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
     stroke-width: 3;
 }
 
+/* Informações do texto do card */
 .infoCorte {
-    min-height: 56px;
-    padding: 3px 5px 6px;
+    flex: 1; /* Preenche o espaço restante uniformemente */
+    padding: 12px 10px;
     background: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
 .infoCorte h2 {
-    margin: 0;
+    margin: 0 0 8px 0;
     color: #000;
-    font-size: 8px;
-    line-height: 1.1;
+    font-size: 15px;
+    line-height: 1.2;
     font-weight: 900;
 }
 
 .infoCorte p {
-    margin: 4px 0 0;
-    color: #111;
-    font-size: 5px;
-    line-height: 1.1;
-    text-align: center;
+    margin: 0;
+    color: #333;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: left;
 }
 
 .acoes {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 25px;
-    margin-top: 13px;
+    gap: 20px;
+    margin-top: 24px;
 }
 
 .botaoVoltarAnalise,
 .botaoConfirmar {
-    height: 20px;
-    padding: 0 12px;
-    border-radius: 3px;
+    height: 38px;
+    padding: 0 20px;
+    border-radius: 6px;
     font-family: inherit;
-    font-size: 8px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -267,10 +276,11 @@
     }
 }
 
+/* Responsividade */
 @media (max-width: 700px) {
     .etapa {
         min-height: auto;
-        padding: 15px 15px 45px;
+        padding: 20px 15px 45px;
     }
 
     .topo {
@@ -278,11 +288,11 @@
     }
 
     .cabecalho h1 {
-        font-size: 20px;
+        font-size: 22px;
     }
 
     .cabecalho p {
-        font-size: 9px;
+        font-size: 13px;
         line-height: 1.4;
     }
 
@@ -291,17 +301,17 @@
     }
 
     .rostoOriginal {
-        margin: 5px 0 8px;
+        margin: 5px 0 12px;
     }
 
     .rostoOriginal img,
     .semImagem {
-        width: 65px;
-        height: 65px;
+        width: 80px;
+        height: 80px;
     }
 
     .rostoOriginal span {
-        font-size: 7px;
+        font-size: 12px;
     }
 
     .cortes {
@@ -311,25 +321,25 @@
     }
 
     .cardCorte {
-        width: 145px;
+        width: 160px;
     }
 
     .imagemCorte {
-        height: 135px;
+        height: 150px;
     }
 
     .infoCorte h2 {
-        font-size: 10px;
+        font-size: 13px;
     }
 
     .infoCorte p {
-        font-size: 7px;
+        font-size: 11px;
     }
 }
 
 @media (max-width: 480px) {
     .cabecalho h1 {
-        font-size: 18px;
+        font-size: 20px;
     }
 
     .cortes {
@@ -338,29 +348,31 @@
     }
 
     .cardCorte {
-        width: min(280px, 90%);
+        width: min(300px, 90%);
     }
 
     .imagemCorte {
-        height: 180px;
+        height: 200px;
     }
 
     .infoCorte h2 {
-        font-size: 12px;
+        font-size: 15px;
     }
 
     .infoCorte p {
-        font-size: 8px;
+        font-size: 12px;
         line-height: 1.3;
     }
 
     .acoes {
         width: 100%;
-        gap: 10px;
+        gap: 12px;
     }
 
     .botaoVoltarAnalise,
     .botaoConfirmar {
         flex: 1;
+        height: 42px;
+        font-size: 14px;
     }
 }

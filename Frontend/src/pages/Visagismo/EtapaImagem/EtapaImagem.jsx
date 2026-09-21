@@ -3,8 +3,7 @@ import { useRef, useState } from 'react';
 import {
     FiCamera,
     FiSun,
-    FiGlasses,
-    FiUploadCloud,
+    FiSmile,
     FiArrowLeft,
     FiImage
 } from 'react-icons/fi';
@@ -138,7 +137,7 @@ function EtapaImagem({
 
                     <div className={styles.dica}>
                         <div className={styles.iconeDica}>
-                            <FiGlasses />
+                            <FiSmile />
                         </div>
 
                         <strong>Sem Acessórios</strong>

@@ -1,0 +1,42 @@
+.pagina {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.conteudo {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.indicadorEtapas {
+    display: none;
+}
+
+.indicadorEtapas span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: #d0d0d0;
+    transition: all 0.3s ease;
+}
+
+.indicadorEtapas span.ativa {
+    width: 22px;
+    border-radius: 10px;
+    background-color: #000;
+}
+
+@media (max-width: 700px) {
+    .indicadorEtapas {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        padding: 15px 0 5px;
+    }
+}

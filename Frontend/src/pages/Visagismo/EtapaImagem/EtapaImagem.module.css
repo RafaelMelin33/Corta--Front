@@ -1,0 +1,294 @@
+.etapa {
+    width: 100%;
+    min-height: 610px;
+    padding: 25px 0 55px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    animation: aparecer 0.5s ease;
+}
+
+.topo {
+    width: min(1050px, calc(100% - 50px));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.botaoVoltar,
+.botaoPular {
+    border: none;
+    background: #000;
+    color: #fff;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.botaoVoltar {
+    min-width: 58px;
+    height: 14px;
+    padding: 0 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.botaoVoltar svg {
+    display: none;
+}
+
+.botaoPular {
+    background: transparent;
+    color: #000;
+    padding: 5px 10px;
+}
+
+.botaoVoltar:hover,
+.botaoPular:hover {
+    transform: translateY(-2px);
+}
+
+.areaPrincipal {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tituloArea {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.tituloArea h1 {
+    margin: 0;
+    color: #050505;
+    font-size: 21px;
+    line-height: 1.15;
+    font-weight: 900;
+    font-style: italic;
+}
+
+.tituloArea p {
+    display: none;
+}
+
+.inputArquivo {
+    display: none;
+}
+
+.areaUpload {
+    width: 278px;
+    height: 66px;
+    border: 1.5px dashed #777;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.areaUpload:hover {
+    border-color: #000;
+    background: #fafafa;
+    transform: translateY(-2px);
+}
+
+.areaUpload.arrastando {
+    border-color: #000;
+    background: #f1f1f1;
+    transform: scale(1.02);
+}
+
+.areaUpload.comImagem {
+    height: 200px;
+    border-style: solid;
+}
+
+.iconeUpload {
+    font-size: 20px;
+    margin-bottom: 3px;
+}
+
+.iconeUpload svg {
+    stroke-width: 1.8;
+}
+
+.areaUpload strong {
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.areaUpload span {
+    margin-top: 2px;
+    font-size: 7px;
+    color: #555;
+}
+
+.preview {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.overlayImagem {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.preview:hover .overlayImagem {
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 1;
+}
+
+.overlayImagem svg {
+    font-size: 23px;
+}
+
+.overlayImagem span {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.dicas {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.dica {
+    width: 86px;
+    height: 51px;
+    border: 1px solid #aaa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.12);
+    transition: all 0.25s ease;
+}
+
+.dica:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+.iconeDica {
+    height: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconeDica svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 1.8;
+}
+
+.dica strong {
+    font-size: 7.5px;
+    font-weight: 800;
+}
+
+.botaoAnalise {
+    margin-top: 16px;
+    border: none;
+    background: #000;
+    color: #fff;
+    padding: 8px 17px;
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.botaoAnalise:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+.botaoAnalise:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateX(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .etapa {
+        min-height: 580px;
+        padding-top: 15px;
+    }
+
+    .topo {
+        width: calc(100% - 30px);
+    }
+
+    .tituloArea h1 {
+        font-size: 19px;
+    }
+
+    .areaUpload {
+        width: calc(100% - 50px);
+        max-width: 320px;
+    }
+
+    .dicas {
+        width: calc(100% - 30px);
+        justify-content: center;
+        gap: 7px;
+    }
+
+    .dica {
+        width: 90px;
+    }
+}
+
+@media (max-width: 380px) {
+    .tituloArea h1 {
+        font-size: 17px;
+    }
+
+    .dica {
+        width: 82px;
+    }
+}

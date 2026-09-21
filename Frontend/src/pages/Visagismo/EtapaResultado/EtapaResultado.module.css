@@ -1,0 +1,366 @@
+.etapa {
+    width: 100%;
+    min-height: 610px;
+    padding: 15px 0 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    animation: entrar 0.5s ease;
+}
+
+.topo {
+    width: min(1050px, calc(100% - 50px));
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 5px;
+}
+
+.botaoVoltar {
+    min-width: 58px;
+    height: 14px;
+    padding: 0 12px;
+    border: none;
+    border-radius: 20px;
+    background: #000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.botaoVoltar svg {
+    display: none;
+}
+
+.botaoVoltar:hover {
+    transform: translateY(-2px);
+}
+
+.cabecalho {
+    text-align: center;
+    margin-bottom: 7px;
+}
+
+.cabecalho h1 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.2;
+    font-style: italic;
+    font-weight: 900;
+    color: #050505;
+}
+
+.cabecalho p {
+    margin: 8px 0 0;
+    font-size: 9px;
+    font-weight: 500;
+    color: #222;
+}
+
+.resultado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.rostoOriginal {
+    width: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 5px;
+}
+
+.rostoOriginal img,
+.semImagem {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #999;
+}
+
+.semImagem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #aaa;
+    color: #fff;
+}
+
+.semImagem svg {
+    width: 22px;
+    height: 22px;
+}
+
+.rostoOriginal span {
+    width: 55px;
+    margin-top: 4px;
+    color: #555;
+    text-align: center;
+    font-size: 5px;
+    line-height: 1.1;
+}
+
+.cortes {
+    display: flex;
+    gap: 8px;
+}
+
+.cardCorte {
+    width: 116px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: #f7f7f7;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.cardCorte:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 7px 15px rgba(0, 0, 0, 0.18);
+}
+
+.cardCorte.selecionado {
+    border-color: #16b83f;
+    box-shadow: 0 4px 12px rgba(22, 184, 63, 0.25);
+    transform: translateY(-3px);
+}
+
+.imagemCorte {
+    width: 100%;
+    height: 108px;
+    position: relative;
+    overflow: hidden;
+    background: #ddd;
+}
+
+.imagemCorte img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.cardCorte:hover .imagemCorte img {
+    transform: scale(1.04);
+}
+
+.check {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #16b83f;
+    color: #fff;
+    animation: check 0.25s ease;
+}
+
+.check svg {
+    width: 12px;
+    height: 12px;
+    stroke-width: 3;
+}
+
+.infoCorte {
+    min-height: 56px;
+    padding: 3px 5px 6px;
+    background: #fff;
+}
+
+.infoCorte h2 {
+    margin: 0;
+    color: #000;
+    font-size: 8px;
+    line-height: 1.1;
+    font-weight: 900;
+}
+
+.infoCorte p {
+    margin: 4px 0 0;
+    color: #111;
+    font-size: 5px;
+    line-height: 1.1;
+    text-align: center;
+}
+
+.acoes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    margin-top: 13px;
+}
+
+.botaoVoltarAnalise,
+.botaoConfirmar {
+    height: 20px;
+    padding: 0 12px;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.botaoVoltarAnalise {
+    border: 1px solid #999;
+    background: #fff;
+    color: #000;
+}
+
+.botaoConfirmar {
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+}
+
+.botaoVoltarAnalise:hover,
+.botaoConfirmar:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.botaoConfirmar:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+@keyframes entrar {
+    from {
+        opacity: 0;
+        transform: translateX(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes check {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 700px) {
+    .etapa {
+        min-height: auto;
+        padding: 15px 15px 45px;
+    }
+
+    .topo {
+        width: 100%;
+    }
+
+    .cabecalho h1 {
+        font-size: 20px;
+    }
+
+    .cabecalho p {
+        font-size: 9px;
+        line-height: 1.4;
+    }
+
+    .resultado {
+        flex-direction: column;
+    }
+
+    .rostoOriginal {
+        margin: 5px 0 8px;
+    }
+
+    .rostoOriginal img,
+    .semImagem {
+        width: 65px;
+        height: 65px;
+    }
+
+    .rostoOriginal span {
+        font-size: 7px;
+    }
+
+    .cortes {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .cardCorte {
+        width: 145px;
+    }
+
+    .imagemCorte {
+        height: 135px;
+    }
+
+    .infoCorte h2 {
+        font-size: 10px;
+    }
+
+    .infoCorte p {
+        font-size: 7px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cabecalho h1 {
+        font-size: 18px;
+    }
+
+    .cortes {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .cardCorte {
+        width: min(280px, 90%);
+    }
+
+    .imagemCorte {
+        height: 180px;
+    }
+
+    .infoCorte h2 {
+        font-size: 12px;
+    }
+
+    .infoCorte p {
+        font-size: 8px;
+        line-height: 1.3;
+    }
+
+    .acoes {
+        width: 100%;
+        gap: 10px;
+    }
+
+    .botaoVoltarAnalise,
+    .botaoConfirmar {
+        flex: 1;
+    }
+}

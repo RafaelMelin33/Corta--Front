@@ -17,6 +17,7 @@ import PersonalizacaoBarbearia from "./pages/PersonalizacaoBarbearia/Personaliza
 import EditarBarbearia from "./pages/EditarBarbearia/EditarBarbearia.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
 import Visagismo from "./pages/Visagismo/Visagismo.jsx";
+import Agendamento from "./pages/Agendamento/Agendamento.jsx";
 
 export default function App() {
     return (
@@ -84,6 +85,8 @@ export default function App() {
                 />
 
                 <Route path="/visagismo" element={<Visagismo />} />
+
+                <Route path="/agendamento" element={<Agendamento />} />
 
                 <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 <Route path="/editarusuario/:id" element={<EditarUsuario />} />

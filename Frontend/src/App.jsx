@@ -17,8 +17,11 @@ import PersonalizacaoBarbearia from "./pages/PersonalizacaoBarbearia/Personaliza
 import EditarBarbearia from "./pages/EditarBarbearia/EditarBarbearia.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
 import Visagismo from "./pages/Visagismo/Visagismo.jsx";
+<<<<<<< HEAD
 import Agendamento from "./pages/Agendamento/Agendamento.jsx";
+=======
 import AdminFinaceiro from "./pages/AdminFinaceiro/AdminFinanceiro.jsx";
+>>>>>>> 5f0dbdaf049354b4be810be681931702cf8c8407
 
 export default function App() {
     return (
@@ -87,8 +90,11 @@ export default function App() {
 
                 <Route path="/visagismo" element={<Visagismo />} />
 
+<<<<<<< HEAD
                 <Route path="/agendamento" element={<Agendamento />} />
+=======
                 <Route path="/financeiro" element={<AdminFinaceiro />} />
+>>>>>>> 5f0dbdaf049354b4be810be681931702cf8c8407
 
                 <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 <Route path="/editarusuario/:id" element={<EditarUsuario />} />

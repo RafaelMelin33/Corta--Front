@@ -18,6 +18,7 @@ import EditarBarbearia from "./pages/EditarBarbearia/EditarBarbearia.jsx";
 import AdminUsuarios from "./pages/AdminUsuarios/AdminUsuarios.jsx";
 import Visagismo from "./pages/Visagismo/Visagismo.jsx";
 import Agendamento from "./pages/Agendamento/Agendamento.jsx";
+import AdminFinaceiro from "./pages/AdminFinaceiro/AdminFinanceiro.jsx";
 
 export default function App() {
     return (
@@ -87,6 +88,7 @@ export default function App() {
                 <Route path="/visagismo" element={<Visagismo />} />
 
                 <Route path="/agendamento" element={<Agendamento />} />
+                <Route path="/financeiro" element={<AdminFinaceiro />} />
 
                 <Route path="/admin/usuarios" element={<AdminUsuarios />} />
                 <Route path="/editarusuario/:id" element={<EditarUsuario />} />
